@@ -82,7 +82,7 @@ interface IOrderData{
 ```
 export interface IFormValidation {
 	valid: boolean;
-	errors: Partial<Record<keyof IOrder, string>>;
+	errors: Partial<Record<keyof TOrderData, string>>;
 }
 ```
 Интерфейс каталога товаров
@@ -92,6 +92,19 @@ export interface IItemsCatalog {
 	preview: string | null;
 	setItem(item: IItem[]): void;
 	getItem(id: string): IItem;
+}
+```
+Интерфейс заказа
+```
+export interface IOrder{
+    items: string[];
+	total: number | null;
+	payment: PayMethods;
+	address: string;
+	email: string;
+	phone: string;
+	valid: boolean;
+errors: Partial<Record<keyof TOrderData, string>>;
 }
 ```
 Интерфейс корзины
@@ -115,7 +128,7 @@ export interface IItemAPI {
 ```
 export type TPayInfo = Pick<IOrderData, 'adress' | 'paymethod'>;
 export type TOrderInfo = Pick<IContacts, 'email' | 'phone'>;
-export type IOrder = TPayInfo & TOrderInfo
+export type TOrderData = TPayInfo & TOrderInfo
 ```
 
 Интерфейс полученного заказа
@@ -213,8 +226,9 @@ interface IFormOrder {
 Брокер событий позволяет отправлять события и подписываться на события, происходящие в системе. Класс используется в презентере для обработки событий и в слоях приложения для генерации событий.\
 Поля:
 
-- `_events: Map<EventName, Set<Subscriber>` - Map из событий и подписчиков;\
-В конструкторе инициализируется свойство _events:
+- `_events: Map<EventName, Set<Subscriber>` - Map из событий и подписчиков;
+
+В конструкторе инициализируется свойство `_events`:
 - `constructor() {
         this._events = new Map<EventName, Set<Subscriber>>();
     }`- новый Map, в который будут записаны события и  подписчики на них.
@@ -249,7 +263,7 @@ interface IFormOrder {
 #### Класс ItemsCatalog
 Наследует класс Model, в качестве дженерика передается массив, реализующий интерфейс `IItemsCatalog`.
 
-Класс отвечает за хранение и логику работы с данными карточек товара, полученных от сервера.\
+Класс отвечает за хранение и логику работы с данными карточек товара, полученных от сервера.
 
 В полях класса хранятся следующие данные:
 
@@ -264,22 +278,22 @@ interface IFormOrder {
 #### Класс Order
 Наследует абстрактный класс Model.
 Класс отвечает за хранение и логику работы с данными заказа текущего пользователя.\
- Конструктор класса принимает инстант брокера событий.\
  В полях класса хранятся следующие данные:
 
 - `adress:string` - адрес пользователя;
 - `email:string` - почта пользователя;
 - `phone:string` - телефон пользователя;
-- `paymethod:string` - выбранный пользователем способ оплаты;
-- `_id:string` - уникальный идентификатор;
-- `events: IEvents` - экземпляр класса `EventEmitter` для инициации событий при изменении данных.
+- `paymethod:PayMethods` - выбранный пользователем способ оплаты;
+- `errors: Partial<Record<keyof TOrderData, string>>;` - ошибки валидации.
 
+Методы:
+- `removeOrderData()` - очистить данные заказа;
+- `validateContacts()` - валидация введенных контактов;
+- `validateOrderData()` - валидация введенного адреса и  проверка, что выбранспособ оплаты;
 #### Класс BasketModel
-
+Наследует абстрактный класс Model.
 Класс хранит данные о товарах, добавленных пользователем в корзину: их список и итоговую сумму к оплате. Наследует абстрактный класс Model
- События в классе:\
- events:IEvents;\
- Поля класса хранят следующие данные:
+Поля класса хранят следующие данные:
 
 - `items:IItem[]` - выбранные товары;
 - `total: number | null` - общая сумма корзины.
@@ -297,7 +311,7 @@ interface IFormOrder {
 Абстрактный класс, который реализует логику управления DOM - элементами. Конструктор класса принимает контейнер, для размещения данных
   `protected constructor(container: HTMLElement) {}`
 
-  Поля:
+Поля:
   - `container` - контейнер, который будет помещаться нужный компонент(каталог, карточка)
   Класс содержит следующие методы управления DOM-элементами:
 - `toggleClass(element: HTMLElement, className: string, force?: boolean)`- переключение селекторов;
@@ -323,19 +337,18 @@ interface IFormOrder {
 - `errors` - устанавливает переданное содержимое компонента с ошибками формы.
 Методы:
 - `onInputChange(field: keyof T, value: string)` - передает событие изменения поля с заданными параметрами;
-- ` render(state: Partial<T> & IFormState) ` - рендерит компонент формы.
+- `render(state: Partial<T> & IFormState) ` - рендерит компонент формы.
 
 
 #### Класс Modal
 Наследует класс  `Component`. Реализует модальное окно.
 Устанавливает слушатели на клавиатуру, для закрытия модального окна по Esc, на клик в оверлей и кнопку-крестик для закрытия попапа.
-Конструктор принимает селектор, по которому в разметке страницы будет идентифицировано модальное окно и экземпляр класса `EventEmitter` для возможности инициации событий.
-
- `constructor(selector: string, events: IEvents)` 
+Конструктор принимает DOM-элемент модального окна на базе шаблона и брокер событий.
+`constructor(container: HTMLElement, protected events: IEvents)`
 
 Поля класса:
 - `_closeButton: HTMLButtonElement` - элемент кнопки закрытия модального окна;
- - `protected _content: HTMLElement` - содержимое окна;
+- `protected _content: HTMLElement` - содержимое окна;
 
 Сеттеры:
 - `set content(value: HTMLElement)` - меняет содержимое модального окна.
@@ -408,7 +421,8 @@ interface IFormOrder {
 - `set email(value: string)` - сеттер для почты;
 - `set phone(value: string)` - сеттер для телефона.
 
-Типы и интерфейсы:\
+Типы и интерфейсы:
+
 `interface IContacts` - интерфейс данных о контактах юзера, неоюходимый для рендера формы.
 #### Класс OrderData
 Наследует абстрактный класс Form, в качестве дженерика передается интерфейс `IOrderData`. Отвечает за отображение формы, содержащей информацию о деталях доставки: адрес и способ оплаты.
@@ -421,6 +435,7 @@ interface IFormOrder {
 
 Конструктор принимает контейнер с формой и брокер событий. В конструкторе инициализируются защищенные свойства, а также добавляются слушатели на кнопки выбора способа оплаты и инпут адреса.
 `constructor(container: HTMLFormElement, events: IEvents)`
+
 Сеттеры:
 - `set address(value: string)` -  меняет содержимое поля address в форме;
 - `set payment(value: PayMethods)` -  меняет классы кнопок в зависимости от переданного типа оплаты.

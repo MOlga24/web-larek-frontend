@@ -18,7 +18,7 @@ interface IContacts {
 }
 //интерфейс деталей заказа
 
-interface IOrderData{
+interface IOrderData {
 	adress: string;
 	paymethod: PayMethods;
 }
@@ -29,11 +29,11 @@ export interface IFormValidation {
 }
 //Интерфейс полученного заказа
 export interface IOrderResult {
-    total: number;
+	total: number;
 }
 //Интерфейс действия с окном заказа
 interface IResultActions {
-    onClick: () => void;
+	onClick: () => void;
 }
 //интерфейс каталога товаров
 export interface IItemsCatalog {
@@ -42,7 +42,17 @@ export interface IItemsCatalog {
 	setItem(item: IItem[]): void;
 	getItem(id: string): IItem;
 }
-
+//интерфейс заказа
+export interface IOrder {
+	items: string[];
+	total: number | null;
+	payment: PayMethods;
+	address: string;
+	email: string;
+	phone: string;
+	valid: boolean;
+	errors: Partial<Record<keyof TOrderData, string>>;
+}
 //интерфейс корзины
 export interface IBasketModel {
 	items: IBasketItem;
@@ -61,16 +71,15 @@ export interface IItemAPI {
 //типы для модальных окон: платеж и адрес, почта и телефон
 export type TPayInfo = Pick<IOrderData, 'adress' | 'paymethod'>;
 export type TOrderInfo = Pick<IContacts, 'email' | 'phone'>;
-export type IOrder = TPayInfo & TOrderInfo
+export type TOrderData = TPayInfo & TOrderInfo & IBasketItem;
 
 //Данные карточки товара для корзины
 type IBasketItem = Pick<IItem, 'name' | 'price'>;
 
-
 //VIEW
 // интерфейс действий с карточкой
 interface ICardActions {
-    onClick: (event: MouseEvent) => void;
+	onClick: (event: MouseEvent) => void;
 }
 // отображение для заданного типа данных
 
@@ -79,9 +88,9 @@ interface IView {
 }
 // отображение страницы с каталогом и счетчиком
 interface IPage {
-    counter: number;
-    catalog: HTMLElement[];
-    locked: boolean;
+	counter: number;
+	catalog: HTMLElement[];
+	locked: boolean;
 }
 // отображение корзины
 interface IBasketView {
@@ -96,7 +105,7 @@ interface IItemsContainer {
 }
 //отображение модального окна
 interface IModalData {
-    content: HTMLElement;
+	content: HTMLElement;
 }
 //отображение для формы заказа
 interface IFormOrder {
