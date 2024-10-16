@@ -49,7 +49,7 @@ yarn build
 
 Интерфейс карточки товара
 ```
-export interface IItem {
+ interface IItemData {
 	_id: string;
 	name: string;
 	description: string;
@@ -61,7 +61,7 @@ export interface IItem {
 ```
 Тип метода платежа
 ```
-export type PayMethods = 'card' | 'cash';
+ type PayMethods = 'card' | 'cash';
 ```
 Интерфейс контактов пользователя
 ```
@@ -80,23 +80,23 @@ interface IOrderData{
 ```
 Интерфейс проверки формы заказа
 ```
-export interface IFormValidation {
+interface IFormValidation {
 	valid: boolean;
 	errors: Partial<Record<keyof TOrderData, string>>;
 }
 ```
 Интерфейс каталога товаров
 ```
-export interface IItemsCatalog {
-	items: IItem[];
+interface IItemsCatalog {
+	items: IItemData[];
 	preview: string | null;
-	setItem(item: IItem[]): void;
-	getItem(id: string): IItem;
+	setItem(item: IItemData[]): void;
+	getItem(id: string): IItemData;
 }
 ```
 Интерфейс заказа
 ```
-export interface IOrder{
+ interface IOrder{
     items: string[];
 	total: number | null;
 	payment: PayMethods;
@@ -109,7 +109,7 @@ errors: Partial<Record<keyof TOrderData, string>>;
 ```
 Интерфейс корзины
 ```
-export interface IBasketModel {
+ interface IBasketModel {
 	items: IBasketItem;
 	add(id: string): void;
 	remove(id: string): void;
@@ -118,22 +118,22 @@ export interface IBasketModel {
 ```
 Интерфейс АПИ(получение данных)
 ```
-export interface IItemAPI {
-	getItems: () => Promise<IItem[]>;
-	getItem: (id: string) => Promise<IItem>;
+ interface IItemAPI {
+	getItems: () => Promise<IItemData[]>;
+	getItem: (id: string) => Promise<IItemData>;
 	orderItems: (order: IContacts) => Promise<IOrderResult>;
 }
 ```
 Типы для модальных окон: платеж и адрес, почта и телефон
 ```
-export type TPayInfo = Pick<IOrderData, 'adress' | 'paymethod'>;
-export type TOrderInfo = Pick<IContacts, 'email' | 'phone'>;
-export type TOrderData = TPayInfo & TOrderInfo
+ type TPayInfo = Pick<IOrderData, 'adress' | 'paymethod'>;
+ type TOrderInfo = Pick<IContacts, 'email' | 'phone'>;
+ type TOrderData = TPayInfo & TOrderInfo
 ```
 
 Интерфейс полученного заказа
 ```
-export interface IOrderResult {
+ interface IOrderResult {
     total: number;
 }
 ```
@@ -146,7 +146,7 @@ interface IResultActions {
 ```
 Данные карточки товара для корзины
 ```
-type IBasketItem = Pick<IItem, 'name' | 'price'>;
+type IBasketItem = Pick<IItemData, 'name' | 'price'>;
 
 ```
 
@@ -267,12 +267,12 @@ interface IFormOrder {
 
 В полях класса хранятся следующие данные:
 
-- `_items: IItem[]`- массив карточек товаров.
+- `_items: IItemData[]`- массив карточек товаров.
 - `_preview: string | null` - id карточки товара, выбранной для просмотра в модальном окне;
 - `events: IEvents` - экземпляр класса `EventEmitter` для инициации событий при изменении данных.
 
 Также в классе имеются методы для взаимодействия с этими данными.
-- `updateItem(item:IItem,status: string):void` - обновляет данные статуса карточки товара в каталоге (добавлена в корзину или нет). Если передан колбэк, то выполняет его после обновления, еcли нет, то вызывает событие изменения массива.
+- `updateItem(item:IItemData,status: string):void` - обновляет данные статуса карточки товара в каталоге (добавлена в корзину или нет). Если передан колбэк, то выполняет его после обновления, еcли нет, то вызывает событие изменения массива.
 - `getItem` - возвращает карточку товара по ее id.
 
 #### Класс Order
@@ -295,7 +295,7 @@ interface IFormOrder {
 Класс хранит данные о товарах, добавленных пользователем в корзину: их список и итоговую сумму к оплате. Наследует абстрактный класс Model
 Поля класса хранят следующие данные:
 
-- `items:IItem[]` - выбранные товары;
+- `items:IItemData[]` - выбранные товары;
 - `total: number | null` - общая сумма корзины.
 
 Методы:
@@ -367,7 +367,7 @@ interface IFormOrder {
  Поля класса содержат элементы разметки элементов карточки. 
 
  Методы:
-- `setData(itemData: IItem, userId: string): void` - заполняет атрибуты элементов карточки данными;
+- `setData(itemData: IItemData, userId: string): void` - заполняет атрибуты элементов карточки данными;
 - `ischoosed(): boolean` - метод возвращает значение выбрано или нет пользователем;
 - `deleteItem(): void` - метод для удаления разметки карточки;
 - `render(): HTMLElement` - метод возвращает полностью заполненную карточку с установленными слушателями;

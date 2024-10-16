@@ -1,15 +1,17 @@
 import { IEvents } from '../components/base/events';
 
 //интерфейс карточки товара
-export interface IItem {
-	_id: string;
-	name: string;
+export interface IItemData {
+	id: string;
 	description: string;
-	price: string;
-	category: string[];
 	image: string;
-	satus: string;
+    title: string;	 
+	category: string;
+	price: number;
+    selected?:true| false;	
+	
 }
+
 export type PayMethods = 'card' | 'cash';
 //интерфейс контактов пользователя
 interface IContacts {
@@ -18,8 +20,8 @@ interface IContacts {
 }
 //интерфейс деталей заказа
 
-interface IOrderData {
-	adress: string;
+export interface IOrderData {
+		adress: string;
 	paymethod: PayMethods;
 }
 //интерфейс проверки формы заказа
@@ -37,10 +39,10 @@ interface IResultActions {
 }
 //интерфейс каталога товаров
 export interface IItemsCatalog {
-	items: IItem[];
+	items: IItemData;
 	preview: string | null;
-	setItem(item: IItem[]): void;
-	getItem(id: string): IItem;
+	setItem(item: IItemData[]): void;
+	// getItem(id: string): IItemData;
 }
 //интерфейс заказа
 export interface IOrder {
@@ -63,8 +65,8 @@ export interface IBasketModel {
 
 //интерфейс АПИ(получение данных)
 export interface IItemAPI {
-	getItems: () => Promise<IItem[]>;
-	getItem: (id: string) => Promise<IItem>;
+	getItems: () => Promise<IItemData[]>;
+	getItem: (id: string) => Promise<IItemData>;
 	orderItems: (order: IContacts) => Promise<IOrderResult>;
 }
 
@@ -72,9 +74,15 @@ export interface IItemAPI {
 export type TPayInfo = Pick<IOrderData, 'adress' | 'paymethod'>;
 export type TOrderInfo = Pick<IContacts, 'email' | 'phone'>;
 export type TOrderData = TPayInfo & TOrderInfo & IBasketItem;
-
+export type TItemData ={ _id: string;
+name: string;
+   description: string;
+   price: string;
+   category: string[];
+   image: string;
+   status: string;}
 //Данные карточки товара для корзины
-type IBasketItem = Pick<IItem, 'name' | 'price'>;
+type IBasketItem = Pick<IItemData, "title"| "price">;
 
 //VIEW
 // интерфейс действий с карточкой
