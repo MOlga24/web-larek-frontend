@@ -1,4 +1,4 @@
-import { IEvents } from "./base/events";
+import { IEvents } from "./events";
 
 /**
  * Базовый компонент
@@ -53,6 +53,6 @@ export abstract class Component<T> {
     // Вернуть корневой DOM-элемент
     render(data?: Partial<T>): HTMLElement {
         Object.assign(this as object, data ?? {});
-        return this.container;
+        return this.container
     }
 }

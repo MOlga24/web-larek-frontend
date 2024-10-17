@@ -8,10 +8,23 @@ export interface IItemData {
     title: string;	 
 	category: string;
 	price: number;
-    selected?:true| false;	
+    // selected?:true| false;	
 	
 }
-
+export type FormErrors = Partial<Record<keyof IOrder, string>>;
+export type ItemStatus = 'selected' | 'not selected';
+export type  IItem = IItemData & ItemStatus;
+export interface IItemStatus{
+    status: ItemStatus;
+    
+}
+export interface IAppState {
+    catalog: IItem[];
+    basket: string[];
+    preview: string | null;
+    order: IOrder | null;
+    loading: boolean;
+}
 export type PayMethods = 'card' | 'cash';
 //интерфейс контактов пользователя
 interface IContacts {
@@ -37,27 +50,27 @@ export interface IOrderResult {
 interface IResultActions {
 	onClick: () => void;
 }
-//интерфейс каталога товаров
-export interface IItemsCatalog {
-	items: IItemData;
-	preview: string | null;
-	setItem(item: IItemData[]): void;
-	// getItem(id: string): IItemData;
-}
+// //интерфейс каталога товаров
+// export interface IItemsCatalog {
+// 	items: IItemData;
+// 	preview: string | null;
+// 	setItem(item: IItemData[]): void;
+// 	// getItem(id: string): IItemData;
+// }
 //интерфейс заказа
 export interface IOrder {
 	items: string[];
-	total: number | null;
+	// total: number | null;
 	payment: PayMethods;
-	address: string;
+	adress: string;
 	email: string;
 	phone: string;
 	valid: boolean;
-	errors: Partial<Record<keyof TOrderData, string>>;
+	// errors: Partial<Record<keyof TOrderData, string>>;
 }
 //интерфейс корзины
 export interface IBasketModel {
-	items: IBasketItem;
+	items: TBasketItem;
 	add(id: string): void;
 	remove(id: string): void;
 	total: string | number;
@@ -73,7 +86,7 @@ export interface IItemAPI {
 //типы для модальных окон: платеж и адрес, почта и телефон
 export type TPayInfo = Pick<IOrderData, 'adress' | 'paymethod'>;
 export type TOrderInfo = Pick<IContacts, 'email' | 'phone'>;
-export type TOrderData = TPayInfo & TOrderInfo & IBasketItem;
+export type TOrderData = TPayInfo & TOrderInfo
 export type TItemData ={ _id: string;
 name: string;
    description: string;
@@ -82,7 +95,7 @@ name: string;
    image: string;
    status: string;}
 //Данные карточки товара для корзины
-type IBasketItem = Pick<IItemData, "title"| "price">;
+type TBasketItem = Pick<IItemData, "title"| "price">;
 
 //VIEW
 // интерфейс действий с карточкой

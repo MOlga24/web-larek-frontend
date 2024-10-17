@@ -1,110 +1,157 @@
 import { EventEmitter } from './components/base/events';
 import './scss/styles.scss';
+import { CDN_URL, API_URL } from './utils/constants';
 import { ItemData } from './components/base/ItemData';
 import { OrderData } from './components/base/OrderData';
 import { ItemDataApi } from './components/base/ItemDataApi';
+import { cloneTemplate } from './utils/utils';
+//import { Item } from './components/base/Item';
+import { ApiResponse } from './components/base/api';
+import { Page } from './components/Page';
+import { AppState } from './components/base/ItemData';
+import { Modal } from './components/common/Modal';
+import { ensureElement } from './utils/utils';
+import { CatalogChangeEvent } from './components/base/ItemData';
+import { CatalogItem } from './components/Card';
+import { IItemData } from './types';
 const events = new EventEmitter();
-const itemsData = new ItemData();
-
+import { Card } from './components/Card';
+import { ApiListResponse } from './components/base/api';
+const itemsData = new ItemData({}, events);
+const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
 const orderData = new OrderData(events);
-const testItem = {
-    "total": 10,
-"items": [
-    {
-        "id": "854cef69-976d-4c2a-a18c-2aa45046c390",
-        "description": "Если планируете решать задачи в тренажёре, берите два.",
-        "image": "/5_Dots.svg",
-        "title": "+1 час в сутках",
-        "category": "софт-скил",
-        "price": 750
-    },
-    {
-        "id": "c101ab44-ed99-4a54-990d-47aa2bb4e7d9",
-        "description": "Лизните этот леденец, чтобы мгновенно запоминать и узнавать любой цветовой код CSS.",
-        "image": "/Shell.svg",
-        "title": "HEX-леденец",
-        "category": "другое",
-        "price": 1450
-    },
-    {
-        "id": "b06cde61-912f-4663-9751-09956c0eed67",
-        "description": "Будет стоять над душой и не давать прокрастинировать.",
-        "image": "/Asterisk_2.svg",
-        "title": "Мамка-таймер",
-        "category": "софт-скил",
-        "price": null
-    },
-    {
-        "id": "412bcf81-7e75-4e70-bdb9-d3c73c9803b7",
-        "description": "Откройте эти куки, чтобы узнать, какой фреймворк вы должны изучить дальше.",
-        "image": "/Soft_Flower.svg",
-        "title": "Фреймворк куки судьбы",
-        "category": "дополнительное",
-        "price": 2500
-    },
-    {
-        "id": "1c521d84-c48d-48fa-8cfb-9d911fa515fd",
-        "description": "Если орёт кот, нажмите кнопку.",
-        "image": "/mute-cat.svg",
-        "title": "Кнопка «Замьютить кота»",
-        "category": "кнопка",
-        "price": 2000
-    },
-    {
-        "id": "f3867296-45c7-4603-bd34-29cea3a061d5",
-        "description": "Чтобы научиться правильно называть модификаторы, без этого не обойтись.",
-        "image": "Pill.svg",
-        "title": "БЭМ-пилюлька",
-        "category": "другое",
-        "price": 1500
-    },
-    {
-        "id": "54df7dcb-1213-4b3c-ab61-92ed5f845535",
-        "description": "Измените локацию для поиска работы.",
-        "image": "/Polygon.svg",
-        "title": "Портативный телепорт",
-        "category": "другое",
-        "price": 100000
-    },
-    {
-        "id": "6a834fb8-350a-440c-ab55-d0e9b959b6e3",
-        "description": "Даст время для изучения React, ООП и бэкенда",
-        "image": "/Butterfly.svg",
-        "title": "Микровселенная в кармане",
-        "category": "другое",
-        "price": 750
-    },
-    {
-        "id": "48e86fc0-ca99-4e13-b164-b98d65928b53",
-        "description": "Очень полезный навык для фронтендера. Без шуток.",
-        "image": "Leaf.svg",
-        "title": "UI/UX-карандаш",
-        "category": "хард-скил",
-        "price": 10000
-    },
-    {
-        "id": "90973ae5-285c-4b6f-a6d0-65d1d760b102",
-        "description": "Сжимайте мячик, чтобы снизить стресс от тем по бэкенду.",
-        "image": "/Mithosis.svg",
-        "title": "Бэкенд-антистресс",
-        "category": "другое",
-        "price": 1000
-    }
-]
-}
 
-// itemsData.setItems(testItem.items);
-// itemsData.getItems(testItem.items);
+// Модель данных приложения
+const appData = new AppState({}, events);
 
-// console.log(itemsData.set('854cef69-976d-4c2a-a18c-2aa45046c390',true));console.log(itemsData);
-console.log(itemsData.getItem('854cef69-976d-4c2a-a18c-2aa45046c390'));
-console.log(itemsData.getTotal(testItem.items));
+// Глобальные контейнеры
+const page = new Page(document.body, events);
+const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 
-const api = new ItemDataApi('https://larek-api.nomoreparties.co');
-api.getItems()
-.then(data => {
-    itemsData.setItems(data)
-    console.log(itemsData);
-})
-.catch(err => console.log(err))
-const itemelement =document.querySelector('.card_full')as HTMLElement
+
+
+// console.log(itemsData.getTotal(testItem.items));
+// events.on<CatalogChangeEvent>('items:changed', () => {
+//     page.catalog = appData.catalog.map(item => {
+//         const card = new CatalogItem(cloneTemplate(cardCatalogTemplate), {
+//             onClick: () => events.emit('card:select', item)
+//         });
+//         return card.render({
+//             title: item.title,
+//             image: item.image,
+//             description: item.description,
+//             price: item.price,
+//             category: item.category,
+//             status: {
+//                 status: item.status,
+//                  label: item.statusLabel
+//             },
+//         });
+//     });
+
+//     // page.counter = appData.getClosedLots().length;
+// });
+const api = new ItemDataApi(CDN_URL, API_URL);
+const itemTemplate = document.querySelector('#card-catalog') as HTMLTemplateElement;
+const itemPreviewTemplate =
+	ensureElement<HTMLTemplateElement>('#card-preview');
+// api.getItemsList()
+// .then(data => {
+//     itemsData.setItems(data)
+// })
+// .catch(err => console.log(err))
+const itemElement =document.querySelector('.gallery')as HTMLDListElement
+
+
+
+
+api.getItemsList()
+.then(data=>{itemsData.setItems(data)})
+// api.get('/api/weblarek/product')
+// .then((res:ApiResponse)=>{itemsData.setItems(res.items as IItemData[])}) так тоже работает, только в stImage поменять адрес image
+// api.getItemsList()
+//     .then(appData.setCatalog.bind(appData) так нет
+//     (console.log(appData)))
+    
+    .catch(err => {
+        console.error(err);
+    });
+    events.on('items:changed', () => {
+        //для каждого продукта в модели каталога инстанцируем и рендерим карточку
+        page.catalog = itemsData.items.map((item) => {
+            const catalogItem = new Card('card', cloneTemplate(itemTemplate), {
+               onClick: () => events.emit('card:select', item), 
+                // создаем действие открытия карточки из каталога
+            }
+        );
+            return catalogItem.render(item);
+        });
+   
+    });
+    //  events.on('card:select', (item: ItemData) => {
+    //     const ItemPreview = new Card('card',cloneTemplate(itemPreviewTemplate), {
+    //         onClick: () => events.emit('preview:changed', item)} )
+            
+    //        // ItemPreview.render(item);
+    //  });
+     events.on('card:select', (item: ItemData) => {
+        const ItemPreview = new Card('card',cloneTemplate(itemPreviewTemplate), {
+                 onClick: () => events.emit('preview:changed', item)} )
+        modal.render({content:ItemPreview.render(item)});
+        
+    });
+    // Блокируем прокрутку страницы если открыта модалка
+events.on('modal:open', () => {
+    page.locked = true;
+});
+// ... и разблокируем
+events.on('modal:close', () => {
+    page.locked = false;
+});
+//     import { IItemData } from "../../types";
+// import { ensureElement } from "../../utils/utils";
+// import { Component } from "./Component";
+//     export class Item extends Component<IItemData> {
+//         protected itemTitle: HTMLElement;
+//         protected itemButton:HTMLButtonElement;
+//         protected itemDescription: HTMLParagraphElement;
+//         protected itemCategory: HTMLSpanElement;
+//         protected itemPrice:HTMLSpanElement;
+//         protected itemImage:HTMLImageElement;
+//         protected items: IItemData[] = [];
+//         constructor(container:HTMLElement){
+//            super(container)
+//            this.itemTitle = ensureElement('.card__title',this.container);
+//           // this.itemButton = ensureElement('.gallery__item',this.container) as HTMLButtonElement;
+//           // this.itemDescription = ensureElement('.card__text',this.container) as HTMLParagraphElement;
+//            this.itemCategory = ensureElement('.card__category',this.container);
+//           this.itemPrice=ensureElement('.card__price',this.container);
+//           this.itemImage=ensureElement('.card__image',container) as HTMLImageElement;
+//         }
+
+//         set title(value:string){
+//             this.setText(this.itemTitle,value); 
+//         }
+//         set category(value:string){
+//             this.setText(this.itemCategory,value); 
+//         }
+//         set price(value:number){
+//             this.setText(this.itemPrice,value); 
+//         }
+//         set image(value:string) {
+//             this.setImage(this.itemImage, value, this.title);
+//         }
+//         set description(value:string){
+//             this.setText(this.itemDescription,value); 
+//         }
+//         // //для переключения способа оплаты => перенести в order
+//         // set paymethod(value:boolean) {
+//         //     this.toggleClass(this.orderPaymethod,'.button_alt-active',value);
+//         //     this.toggleClass(this.orderPaymethod,'.button_alt',!value);
+//         // }
+//         // render(data:Partial<IItemData>):HTMLElement{
+//         //     Object.assign(this as object, data);
+//         //     return this.container;
+//         // }
+
+//     }

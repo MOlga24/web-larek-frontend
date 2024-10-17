@@ -1,9 +1,12 @@
+import { IItem, IItemData } from "../../types";
 
 export type ApiListResponse<Type> = {
     total: number,
     items: Type[]
 };
-
+export interface ApiResponse {
+	items: IItemData[];
+}
 export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
 
 export class Api {
@@ -21,7 +24,7 @@ export class Api {
     }
 
     protected handleResponse<T>(response: Response): Promise<T> {
-        if (response.ok) return response.json();
+        if (response.ok)return response.json()
         else return response.json()
             .then(data => Promise.reject(data.error ?? response.statusText));
     }

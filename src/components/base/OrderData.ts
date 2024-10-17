@@ -9,7 +9,7 @@ export class OrderData implements IOrderData {
     email: string;
      phone: string;
     valid: boolean;
-  errors: Partial<Record<keyof TOrderData, string>>;
+//   errors: Partial<Record<keyof TOrderData, string>>;
  events: IEvents;
     constructor(events:IEvents){
         this.events = events;
@@ -21,7 +21,7 @@ export class OrderData implements IOrderData {
     //     }
     // }
     setOrderInfo(orderData:IOrder){
-        this.adress = orderData.address;
+        this.adress = orderData.adress;
         this.email = orderData.email;
         this.phone = orderData.phone;
         this.paymethod = orderData.payment;

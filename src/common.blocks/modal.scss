@@ -3,7 +3,7 @@
 
 .modal {
   @include mixins.sublayer;
-  height: max-content;
+  height:max-content;
   position: absolute;
   display: none;
   justify-content: center;
@@ -28,7 +28,7 @@
   }
 
   &__content {
-    flex-grow: 1;
+    flex-grow: 1;   
   }
 
   &__title {

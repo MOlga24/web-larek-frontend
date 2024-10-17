@@ -4,7 +4,10 @@
 .gallery {
   @include mixins.container;
   @include mixins.grid(600px, 24px);
-
+  &__items {
+    @include mixins.flex(column);
+    gap: 2rem;
+  }
   &__item {
     border: none;
     border-radius: $defaultBorderRadius;
