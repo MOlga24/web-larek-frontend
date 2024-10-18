@@ -4,6 +4,7 @@ import { CDN_URL, API_URL } from './utils/constants';
 import { ItemData } from './components/base/ItemData';
 import { OrderData } from './components/base/OrderData';
 import { ItemDataApi } from './components/base/ItemDataApi';
+import { Basket } from './components/Basket';
 import { cloneTemplate } from './utils/utils';
 //import { Item } from './components/base/Item';
 import { ApiResponse } from './components/base/api';
@@ -17,13 +18,15 @@ import { IItemData } from './types';
 const events = new EventEmitter();
 import { Card } from './components/Card';
 import { ApiListResponse } from './components/base/api';
+import { BasketData } from './components/base/BasketData';
 const itemsData = new ItemData({}, events);
 const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
 const orderData = new OrderData(events);
-
+const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
+const basketCardTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
 // Модель данных приложения
 const appData = new AppState({}, events);
-
+const basketData = new BasketData({},events);
 // Глобальные контейнеры
 const page = new Page(document.body, events);
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
@@ -55,6 +58,7 @@ const api = new ItemDataApi(CDN_URL, API_URL);
 const itemTemplate = document.querySelector('#card-catalog') as HTMLTemplateElement;
 const itemPreviewTemplate =
 	ensureElement<HTMLTemplateElement>('#card-preview');
+    const basket = new Basket(cloneTemplate(basketTemplate), events);
 // api.getItemsList()
 // .then(data => {
 //     itemsData.setItems(data)
@@ -77,6 +81,7 @@ api.getItemsList()
         console.error(err);
     });
     events.on('items:changed', () => {
+        page.counter =basketData.items.length;
         //для каждого продукта в модели каталога инстанцируем и рендерим карточку
         page.catalog = itemsData.items.map((item) => {
             const catalogItem = new Card('card', cloneTemplate(itemTemplate), {
@@ -85,7 +90,9 @@ api.getItemsList()
             }
         );
             return catalogItem.render(item);
-        });
+        }
+       
+    );
    
     });
     //  events.on('card:select', (item: ItemData) => {
@@ -96,7 +103,7 @@ api.getItemsList()
     //  });
      events.on('card:select', (item: ItemData) => {
         const ItemPreview = new Card('card',cloneTemplate(itemPreviewTemplate), {
-                 onClick: () => events.emit('preview:changed', item)} )
+                 onClick: () => events.emit('basket:add', item)} )
         modal.render({content:ItemPreview.render(item)});
         
     });
@@ -108,6 +115,66 @@ events.on('modal:open', () => {
 events.on('modal:close', () => {
     page.locked = false;
 });
+events.on('basket:add', (item:ItemData) => 
+    {basketData.items.some((it) => it.id === item.id) ? basketData.removeFromBasket(item): basketData.addToBasket(item);
+        page.counter =basketData.items.length;
+        basket.items= basketData.items.map((item, num) =>{
+            const basketItem = new Card('card', cloneTemplate(basketCardTemplate),
+            { onClick: () => events.emit('basket:add', item)})
+            
+            return basketItem.render(item)});
+});
+events.on('basket:open', ()=>{
+    
+       modal.render({content:  basket.render()
+	});
+    });
+       
+   
+
+    
+
+       
+   
+
+
+// events.on('auction:changed', () => {
+//     page.counter = appData.getClosedLots().length;
+//     bids.items = appData.getActiveLots().map(item => {
+//         const card = new BidItem(cloneTemplate(cardBasketTemplate), {
+//             onClick: () => events.emit('preview:changed', item)
+//         });
+//         return card.render({
+//             title: item.title,
+//             image: item.image,
+//             status: {
+//                 amount: item.price,
+//                 status: item.isMyBid
+//             }
+//         });
+//     });
+//     let total = 0;
+//     basket.items = appData.getClosedLots().map(item => {
+//         const card = new BidItem(cloneTemplate(soldTemplate), {
+//             onClick: (event) => {
+//                 const checkbox = event.target as HTMLInputElement;
+//                 appData.toggleOrderedLot(item.id, checkbox.checked);
+//                 basket.total = appData.getTotal();
+//                 basket.selected = appData.order.items;
+//             }
+//         });
+//         return card.render({
+//             title: item.title,
+//             image: item.image,
+//             status: {
+//                 amount: item.price,
+//                 status: item.isMyBid
+//             }
+//         });
+//     });
+//     basket.selected = appData.order.items;
+//     basket.total = total;
+// })
 //     import { IItemData } from "../../types";
 // import { ensureElement } from "../../utils/utils";
 // import { Component } from "./Component";

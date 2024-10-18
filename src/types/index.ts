@@ -8,7 +8,7 @@ export interface IItemData {
     title: string;	 
 	category: string;
 	price: number;
-    // selected?:true| false;	
+    selected?:boolean;
 	
 }
 export type FormErrors = Partial<Record<keyof IOrder, string>>;
@@ -19,7 +19,7 @@ export interface IItemStatus{
     
 }
 export interface IAppState {
-    catalog: IItem[];
+    catalog: IItemData[];
     basket: string[];
     preview: string | null;
     order: IOrder | null;
@@ -69,13 +69,11 @@ export interface IOrder {
 	// errors: Partial<Record<keyof TOrderData, string>>;
 }
 //интерфейс корзины
-export interface IBasketModel {
-	items: TBasketItem;
-	add(id: string): void;
-	remove(id: string): void;
-	total: string | number;
-}
 
+export interface IBasketView {
+	items: HTMLElement[];
+	total: number;
+}
 //интерфейс АПИ(получение данных)
 export interface IItemAPI {
 	getItems: () => Promise<IItemData[]>;
@@ -114,14 +112,10 @@ interface IPage {
 	locked: boolean;
 }
 // отображение корзины
-interface IBasketView {
-	selected: string[];
-	items: HTMLElement[];
-	total: number;
-}
+
 
 //отображение для карточек товара
-interface IItemsContainer {
+export interface IItemsContainer {
 	new (container: HTMLElement, events?: IEvents): IView;
 }
 //отображение модального окна

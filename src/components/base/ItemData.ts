@@ -2,25 +2,25 @@ import { IEvents } from "./events";
 import { FormErrors } from "../../types";
 import { PayMethods } from "../../types";
 import { Model } from "./Model";
-import { IItemData, IOrder,  IAppState, ItemStatus, IItem } from "../../types";
+import { IItemData, IOrder,  IAppState } from "../../types";
 export type CatalogChangeEvent = {
-   catalog: ItemData[]
+   catalog: IItemData[]
 };
-export class ItemData extends Model<IItem>{
+export class ItemData extends Model<IItemData>{
   items: IItemData[] = [];
   id:string;
-   //   selected?:boolean;
+   
 //     preview: string;
 
     title: string;
     category: string;
      image: string;
    price: number;
-status: ItemStatus;
+// status: string;
      description: string;
   // _preview: string | null;
 
-constructor(data:Partial<IItem>, protected events:IEvents){
+constructor(data:Partial<IItemData>, protected events:IEvents){
         super(data,events);
     }
    // set (id:string, value:boolean){const u = this.getItem(id);
@@ -36,32 +36,48 @@ constructor(data:Partial<IItem>, protected events:IEvents){
     
      }
      getItem(id:string):IItemData{
-        return this.items.find(item => item.id ===item.id);
+        return this.items.find(item => id ===item.id);
+        
      }
 //      selectItem(id:string){
 //        const item = this.getItem(id);
 //        item.selected = !item.selected;
 //   }
-     getTotal(items:IItemData[]){
-        return this.items.length;
+     getTotal(){
+        // return this.items.length;
      }
-     
-    get statusLabel(){
-      this.events.emit('status:changed');
-      switch (this.status) { 
-          case "selected":
-              return `добавлено в корзину`
-            case "not selected":
-              return `удалено из корзины`
+     selectItem(id: string) {
+      const item = this.getItem(id);
+      item.selected = true;
+      console.log(item);
+      this.events.emit('items:changed');
+      
+  }
+//   getSelected(){const sel = [];
+// const itemSelected =sel.concat(this.items.filter(item => item.selected === true ));
+
+
+
+// console.log(itemSelected);
+// return itemSelected;
+//   }
+    // get statusLabel(){
+    //   this.events.emit('status:changed');
+    //   switch (this.status) { 
+    //       case "selected":
+    //           return `добавлено в корзину`
+    //         case "not selected":
+    //           return `удалено из корзины`
           
-          default:
-              return this.status;
-      }
+    //       default:
+    //           return this.status;
+    //   }
       
 
-  }
+  // }
   
     }
+
     export class AppState extends Model<IAppState> {
       basket: string[];
       catalog: ItemData[]=[];
@@ -78,7 +94,7 @@ constructor(data:Partial<IItem>, protected events:IEvents){
       };
       preview: string | null;
       formErrors: FormErrors = {};
-      setCatalog(items: IItem[]) {
+      setCatalog(items: IItemData[]) {
          this.catalog = items.map(item => new ItemData(item, this.events));
          this.emitChanges('items:changed', { catalog: this.catalog });
      }

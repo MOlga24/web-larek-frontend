@@ -1,4 +1,4 @@
-import { IItemData, IOrder, IItem, IOrderResult } from "../../types";
+import { IItemData, IOrder, IOrderResult } from "../../types";
 import { ItemData } from "./ItemData";
 import { Api,ApiListResponse } from "./api";
 export interface IDataAPI {

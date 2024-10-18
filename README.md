@@ -490,7 +490,6 @@ constructor (container: HTMLElement, events: IEvents, actions: ISuccessActions).
    - `basket:delete` - удаление товара из корзины;
    - `basket:add` - добавление товара в корзину;
    - `basket:submit` - оформить заказ;
-   - `item:select` - добавление товара в корзину;
    - `order:input` - изменение данных в форме с данными пользователя;
    - `order:submit` - сохранение данных пользователя в модальном окне;
    - `order:validation` - событие, сообщающее о необходимости валидации формы заказа;

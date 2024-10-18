@@ -1,5 +1,5 @@
 import {Component} from "./base/Component";
-import {IItem, ItemStatus} from "../types";
+// import {ItemStatus} from "../types";
 import {bem, createElement, ensureElement} from "../utils/utils";
 import { CDN_URL } from "../utils/constants";
 import clsx from "clsx";
@@ -19,9 +19,9 @@ export interface ICard<T> {
 
 export class Card<T> extends Component<ICard<T>> {
     protected сardTitle: HTMLElement;
-    protected cardImage: HTMLImageElement;
+    protected cardImage?: HTMLImageElement;
     protected cardDescription: HTMLParagraphElement;
-    protected cardCategory: HTMLSpanElement;
+    protected cardCategory?: HTMLSpanElement;
     protected cardPrice: HTMLSpanElement;
     protected cardButton?: HTMLButtonElement;//кнопка нужна не на всех отображениях карточек
     protected cardItemButton?:HTMLElement; 
@@ -29,10 +29,10 @@ export class Card<T> extends Component<ICard<T>> {
         super(container);
 
         this.сardTitle = ensureElement<HTMLElement>(`.${blockName}__title`, container);
-        this.cardImage= ensureElement<HTMLImageElement>(`.${blockName}__image`, container);
+        this.cardImage= container.querySelector(`.${blockName}__image`);
         this.cardButton= container.querySelector(`.${blockName}__button`);
         this.cardDescription = container.querySelector(`.${blockName}__description`);
-        this.cardCategory= ensureElement<HTMLSpanElement>(`.${blockName}__category`, container);
+        this.cardCategory= container.querySelector(`.${blockName}__category`);
         this.cardPrice= ensureElement<HTMLSpanElement>(`.${blockName}__price`, container);
      
 // this.cardItemButton.addEventListener('click',() =>this.actions.emit('card:select'),this.data)
@@ -83,7 +83,7 @@ export class Card<T> extends Component<ICard<T>> {
 }
 
 export type CatalogItemStatus = {
-    status: ItemStatus,
+    status: boolean,
     label: string
 };
 
@@ -98,8 +98,8 @@ export class CatalogItem extends Card<CatalogItemStatus> {
     set status({ status, label }: CatalogItemStatus) {
         this.setText(this._status, label);
         this._status.className = clsx('card__status', {
-            [bem(this.blockName, 'status', 'selected').name]: status === 'selected',
-            [bem(this.blockName, 'status', 'not selected').name]: status === 'not selected'
+            [bem(this.blockName, 'status', 'selected').name]: status === true,
+            [bem(this.blockName, 'status', 'not selected').name]: status === false
         });
     }
 }
