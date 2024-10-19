@@ -489,6 +489,7 @@ constructor (container: HTMLElement, events: IEvents, actions: ISuccessActions).
    - `card:open` - открытие в модальном окне карточки товара;
    - `basket:delete` - удаление товара из корзины;
    - `basket:add` - добавление товара в корзину;
+   - `form:open` - открытие формы заказа;
    - `basket:submit` - оформить заказ;
    - `order:input` - изменение данных в форме с данными пользователя;
    - `order:submit` - сохранение данных пользователя в модальном окне;

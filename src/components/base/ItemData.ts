@@ -9,7 +9,7 @@ export type CatalogChangeEvent = {
 export class ItemData extends Model<IItemData>{
   items: IItemData[] = [];
   id:string;
-   
+   index?:number;
 //     preview: string;
 
     title: string;

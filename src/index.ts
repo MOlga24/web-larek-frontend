@@ -12,18 +12,21 @@ import { Page } from './components/Page';
 import { AppState } from './components/base/ItemData';
 import { Modal } from './components/common/Modal';
 import { ensureElement } from './utils/utils';
-import { CatalogChangeEvent } from './components/base/ItemData';
-import { CatalogItem } from './components/Card';
+// import { CatalogChangeEvent } from './components/base/ItemData';
+import { Success } from './components/OrderSuccess';
 import { IItemData } from './types';
 const events = new EventEmitter();
 import { Card } from './components/Card';
 import { ApiListResponse } from './components/base/api';
 import { BasketData } from './components/base/BasketData';
+import { FormOrder} from './components/Form_Order';
+import { FormContacts } from './components/Form_Contacts';
 const itemsData = new ItemData({}, events);
 const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
-const orderData = new OrderData(events);
+// const orderData = new OrderData(events);
 const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
 const basketCardTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
+const successTemplate = ensureElement<HTMLTemplateElement>('#success');
 // Модель данных приложения
 const appData = new AppState({}, events);
 const basketData = new BasketData({},events);
@@ -56,14 +59,13 @@ const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 // });
 const api = new ItemDataApi(CDN_URL, API_URL);
 const itemTemplate = document.querySelector('#card-catalog') as HTMLTemplateElement;
+const formOrderTemplate = document.querySelector('#order') as HTMLTemplateElement;
+const formContactsTemplate = document.querySelector('#contacts') as HTMLTemplateElement;
 const itemPreviewTemplate =
 	ensureElement<HTMLTemplateElement>('#card-preview');
-    const basket = new Basket(cloneTemplate(basketTemplate), events);
-// api.getItemsList()
-// .then(data => {
-//     itemsData.setItems(data)
-// })
-// .catch(err => console.log(err))
+const basket = new Basket(cloneTemplate(basketTemplate), events);
+const formOrder = new FormOrder(cloneTemplate(formOrderTemplate),events);
+const formContacts =new FormContacts(cloneTemplate(formContactsTemplate),events);
 const itemElement =document.querySelector('.gallery')as HTMLDListElement
 
 
@@ -115,27 +117,78 @@ events.on('modal:open', () => {
 events.on('modal:close', () => {
     page.locked = false;
 });
-events.on('basket:add', (item:ItemData) => 
-    {basketData.items.some((it) => it.id === item.id) ? basketData.removeFromBasket(item): basketData.addToBasket(item);
+events.on('basket:add', (item:ItemData) => {
+        modal.close();        
+        basketData.items.some((it) => it.id === item.id) ? basketData.removeFromBasket(item): basketData.addToBasket(item);
+        basket.total = basketData.getTotalSum() +' '+'синапсов';     
         page.counter =basketData.items.length;
-        basket.items= basketData.items.map((item, num) =>{
+        basket.items= basketData.items.map((item,index) =>{
             const basketItem = new Card('card', cloneTemplate(basketCardTemplate),
-            { onClick: () => events.emit('basket:add', item)})
-            
+            { onClick: () => events.emit('basket:delete', item)})
+            basketItem.index = basketData.items.indexOf(item)+1;
             return basketItem.render(item)});
 });
 events.on('basket:open', ()=>{
-    
-       modal.render({content:  basket.render()
-	});
+    if (basketData.total === 0){basket.setDisabled(basket.basketButton, true)
+    }
+    if (basket.basketButton) {
+        basket.basketButton.addEventListener('click', () => {
+            events.emit('form:open'); 
+        });
+    }
+       modal.render({content:  basket.render()});
     });
        
+    events.on('basket:delete', (item:IItemData)=>{
+        basketData.removeFromBasket(item);
+        page.counter =basketData.items.length;
+        basket.total = basketData.total +' '+'синапсов'; 
+        if (basketData.total === 0){basket.setDisabled(basket.basketButton, true)
+        }
+    onClick:() =>events.emit('form:open')
+        basket.items= basketData.items.map((item,index) =>{
+           
+            const basketItem = new Card('card', cloneTemplate(basketCardTemplate),
+            { onClick: () => events.emit('basket:delete', item)})
+            basketItem.index = basketData.items.indexOf(item)+1;
+            
+            return basketItem.render(item)});
+            
+});
    
 
+events.on('form:open', ()=>{
+    formOrder.setDisabled(formOrder.submitButton,false);
+    formOrder.submitButton.addEventListener('click',event=>{ event.preventDefault();
+      events.emit('contacts:open')})
+    //onClick:() =>events.emit('contacts:open')
+    modal.render({content:  formOrder.render()});
+ });
+
+ events.on('contacts:open', ()=>{
+    formContacts.setDisabled(formContacts.submitButton,false);
+    formContacts.submitButton.addEventListener('click',event=>{ event.preventDefault();
+        events.emit('order:submit')})
+    modal.render({content:  formContacts.render()});
+ });    
+   
+// Отправлена форма заказа
+events.on('order:submit', () => {
     
-
-       
-   
+            const success = new Success(cloneTemplate(successTemplate), {
+                onClick: () => {
+                    modal.close();
+                    basketData.clearBasket();
+                    events.emit('items:changed');
+                }
+              
+            });
+          
+            modal.render({
+                content: success.render({})
+            });
+        })
+        
 
 
 // events.on('auction:changed', () => {

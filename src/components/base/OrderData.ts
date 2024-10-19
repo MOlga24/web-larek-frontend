@@ -1,19 +1,22 @@
 import { TOrderData, PayMethods, IOrder} from "../../types"; 
 import  { IOrderData } from "../../types"; 
 import { IEvents } from "./events";
-export class OrderData implements IOrderData {
+import { FormOrder } from "../Form_Order";
+export class OrderData extends FormOrder<IOrderData> {
   	items: string[];
    total: number | null;
-     paymethod: PayMethods;
+  payment:string;
      adress: string;
     email: string;
      phone: string;
-    valid: boolean;
+    //valid: boolean;
 //   errors: Partial<Record<keyof TOrderData, string>>;
- events: IEvents;
-    constructor(events:IEvents){
-        this.events = events;
-    }
+
+ constructor(container: HTMLFormElement, events: IEvents) {
+    super(container, events);
+
+}
+    
     // getOrderInfo(): TOrderData{
     //     return {
     //         // items: this.items,
@@ -24,7 +27,11 @@ export class OrderData implements IOrderData {
         this.adress = orderData.adress;
         this.email = orderData.email;
         this.phone = orderData.phone;
-        this.paymethod = orderData.payment;
+        this.payment= orderData.payment
         this.events.emit('order:input');
     }
+  set paymethod(value:boolean) {
+   this.toggleClass(this.payMethod,'.button_alt-active',value);
+    this.toggleClass(this.payMethod,'.button_alt',!value);
+ }
 }

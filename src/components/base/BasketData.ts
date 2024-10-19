@@ -14,7 +14,7 @@ export class BasketData extends Model<IItemData> {
     }
    removeFromBasket(item:IItemData){
         item.selected =!true;
-       this.items = this.items.filter((it) => it.id ===item.id);
+       this.items = this.items.filter((it) => it.id !==item.id);
         this.total = this.getTotalSum();
     }
     clearBasket(){

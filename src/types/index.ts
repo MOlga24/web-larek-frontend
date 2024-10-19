@@ -9,6 +9,7 @@ export interface IItemData {
 	category: string;
 	price: number;
     selected?:boolean;
+	index?:number;
 	
 }
 export type FormErrors = Partial<Record<keyof IOrder, string>>;

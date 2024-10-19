@@ -4,10 +4,12 @@ import { ensureElement, createElement, formatNumber } from "../utils/utils";
 import { EventEmitter } from "./base/events";
 import {  } from "../utils/utils";
 import { ItemData } from "./base/ItemData";
+import { BasketData } from "./base/BasketData";
 export class Basket extends Component<IItemData>{
     protected basketList: HTMLElement;
     protected basketTotal: HTMLSpanElement;
-    protected basketButton: HTMLButtonElement;
+    basketButton: HTMLButtonElement;
+
 
     constructor(container: HTMLElement, protected events: EventEmitter) {
         super(container);
@@ -15,12 +17,8 @@ export class Basket extends Component<IItemData>{
         this.basketList = ensureElement<HTMLElement>('.basket__list', this.container);
         this.basketTotal = this.container.querySelector('.basket__price');
         this.basketButton = this.container.querySelector('.basket__button');
-
-        if (this.basketButton) {
-            this.basketButton.addEventListener('click', () => {
-                events.emit('order:open');
-            });
-        }
+        
+       
 
         // this.items = [];
     // }
@@ -45,7 +43,8 @@ export class Basket extends Component<IItemData>{
         }
     }
 
-    set total(total: number) {
-        this.setText(this.basketTotal, formatNumber(total));
+    set total(total:string) {
+        this.setText(this.basketTotal, total);
     }
+
 }
