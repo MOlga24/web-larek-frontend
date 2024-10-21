@@ -1,60 +1,86 @@
 import { ensureElement } from "../utils/utils";
-import { Component } from "./base/Component";
 import { EventEmitter, IEvents } from "./base/events";
+import { Form } from "./Form";
+import { IOrderData, PayMethods } from "../types";
 
-interface IForm {
-    value: string;
-    buttonText: string;
-    errors: string[];
-    valid: boolean;
-}
-export class FormOrder<T> extends Component<IForm>  {
+
+export class FormOrder extends Form<IOrderData>  {
     protected cashButton: HTMLButtonElement;
     protected cardButton: HTMLButtonElement;
-    protected inputField: HTMLInputElement;
-     submitButton: HTMLButtonElement;
-    protected formErrors: HTMLElement;
-    protected payMethod:HTMLButtonElement;
+    protected orderAdress: HTMLInputElement;
+    submitButton: HTMLButtonElement;
+    protected formErrors:HTMLElement;
+    protected orderForm:HTMLFormElement;
+//    protected payMethod:HTMLButtonElement;
     constructor(container: HTMLFormElement, protected events: IEvents) {
-        super(container);
-        this.formErrors = ensureElement<HTMLElement>('.form__errors', this.container);
-        this.inputField = ensureElement('.form__input', this.container) as HTMLInputElement;
+        super(container,events);
+        this.orderForm = this.container.querySelector('.form');
+       this.formErrors = ensureElement<HTMLElement>('.form__errors', this.container);
+        this.orderAdress= ensureElement('.form__input', this.container) as HTMLInputElement;
         this.submitButton = ensureElement('.order__button', this.container) as HTMLButtonElement;
-        this.payMethod = container.querySelector('.button_alt');
-        this.cardButton = container.querySelector('#order button[name="card"]');
-        this.cashButton = container.querySelector('#order button[name="cash"]');
-        this.container.addEventListener('input', (e: Event) => {
-            const target = e.target as HTMLInputElement;
-            const field = target.name as keyof T;
-            const value = target.value;
-            this.onInputChange(field, value);
-        });
+        // this.payMethod = container.querySelector('.button_alt');
+        this.cardButton =  ensureElement('.button_alt[name=card]', this.container)as HTMLButtonElement;
+        this.cashButton = ensureElement('.button_alt[name=cash]', this.container)as HTMLButtonElement;
+        
         // this.container.addEventListener('submit', (event) => {
         //     event.preventDefault();
-        //     this.events.emit('contacts:open', {value: this.inputField.value});
+        //     this.events.emit(`contacts:open`);
         // })
+        this.orderAdress.addEventListener('input',()=>{
+            this.onInputChange('adress',this.orderAdress.value)
+        })
+        this.cardButton.addEventListener('click',()=>{
+            this.payment = 'card';
+            this.onInputChange('payment','card')
+        })
+        this.cashButton.addEventListener('click',()=>{
+            this.payment = 'cash'
+            this.onInputChange('payment','cash')
+        })
     }
-    protected onInputChange(field: keyof T, value: string) {
-        // this.events.emit(`${this.container.name}.${String(field)}:change`, {
-        //     field,
-        //     value
-        // });
-    }
+  
 
-    set value(value: string) {
-        this.inputField.value = value;
+    set adress(value: string) {
+        this.orderAdress.value = value;
     }
     set valid(value: boolean) {
-        this.submitButton.disabled = !value;
+        // if (value == false) {this.hideInputError(this.errors)}
+        //this.submitButton.disabled = value;
     }
-    set buttonText(value: string) {
-        this.setText(this.submitButton, value);
+    set payment(value:PayMethods){
+        this.cardButton.classList.toggle('button_alt-active',value ==='card');
+        this.cashButton.classList.toggle('button_alt-active',value ==='cash');
     }
-    set errors(value: string) {
-        this.setText(this.formErrors, value);
-    }
+     set error(data:{field:string, value: string,errorMessage:string}) {
+        if(data.errorMessage){
+            this.showInputError(data.field,data.errorMessage)}
+            else{this.hideInputError(data.field);
+    
+            }
+        }
+        showInputError(field:string,errorMessage:string){
+            this._errors.textContent = 'поле не может быть пустым';
+    
+        }
+    hideInputError(field:string){
+        this._errors.textContent  = '';
 
-    // render(state: Partial<T> & IForm) {
+   }
+ 
+//     close(){
+//         this.orderForm.reset();
+//       this.hideInputError(this.orderAdress.value);
+//     }
+    //     this.setText(this.formErrors, value);
+    // }
+    // set orderPhone(value: string) {
+    //     (this.container.phone = value);
+    // }
+    
+    // set orderEmail(value: string) {
+    //     this.email = value;
+    // }
+    // render(state: Partial<T> & IFormState) {
     //     const {valid, errors, ...inputs} = state;
     //     super.render({valid, errors});
     //     Object.assign(this, inputs);

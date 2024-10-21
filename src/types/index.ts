@@ -10,6 +10,7 @@ export interface IItemData {
 	price: number;
     selected?:boolean;
 	index?:number;
+	// total:number;
 	
 }
 export type FormErrors = Partial<Record<keyof IOrder, string>>;
@@ -28,7 +29,7 @@ export interface IAppState {
 }
 export type PayMethods = 'card' | 'cash';
 //интерфейс контактов пользователя
-interface IContacts {
+export interface IContacts {
 	email: string;
 	phone: string;
 }
@@ -36,7 +37,7 @@ interface IContacts {
 
 export interface IOrderData {
 		adress: string;
-	paymethod: PayMethods;
+	payment: string;
 }
 //интерфейс проверки формы заказа
 export interface IFormValidation {
@@ -51,23 +52,17 @@ export interface IOrderResult {
 interface IResultActions {
 	onClick: () => void;
 }
-// //интерфейс каталога товаров
-// export interface IItemsCatalog {
-// 	items: IItemData;
-// 	preview: string | null;
-// 	setItem(item: IItemData[]): void;
-// 	// getItem(id: string): IItemData;
-// }
+
 //интерфейс заказа
 export interface IOrder {
-	items: string[];
+	//items: IItemData[];
 	// total: number | null;
-	payment: PayMethods;
+	//payment: PayMethods;
 	adress: string;
 	email: string;
 	phone: string;
-	valid: boolean;
-	// errors: Partial<Record<keyof TOrderData, string>>;
+	//valid: boolean;
+	 //errors: Partial<Record<keyof TOrderData, string>>;
 }
 //интерфейс корзины
 
@@ -83,9 +78,9 @@ export interface IItemAPI {
 }
 
 //типы для модальных окон: платеж и адрес, почта и телефон
-export type TPayInfo = Pick<IOrderData, 'adress' | 'paymethod'>;
+export type TPayInfo = Pick<IOrderData, 'adress' | 'payment'>;
 export type TOrderInfo = Pick<IContacts, 'email' | 'phone'>;
-export type TOrderData = TPayInfo & TOrderInfo
+ export type TOrderData = TPayInfo & TOrderInfo
 export type TItemData ={ _id: string;
 name: string;
    description: string;

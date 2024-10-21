@@ -14,13 +14,14 @@ import { Modal } from './components/common/Modal';
 import { ensureElement } from './utils/utils';
 // import { CatalogChangeEvent } from './components/base/ItemData';
 import { Success } from './components/OrderSuccess';
-import { IItemData } from './types';
+import { IItemData, IOrderData,PayMethods,TOrderData } from './types';
 const events = new EventEmitter();
 import { Card } from './components/Card';
 import { ApiListResponse } from './components/base/api';
 import { BasketData } from './components/base/BasketData';
 import { FormOrder} from './components/Form_Order';
 import { FormContacts } from './components/Form_Contacts';
+import { IContacts } from './types'; 
 const itemsData = new ItemData({}, events);
 const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
 // const orderData = new OrderData(events);
@@ -67,7 +68,7 @@ const basket = new Basket(cloneTemplate(basketTemplate), events);
 const formOrder = new FormOrder(cloneTemplate(formOrderTemplate),events);
 const formContacts =new FormContacts(cloneTemplate(formContactsTemplate),events);
 const itemElement =document.querySelector('.gallery')as HTMLDListElement
-
+const order = new OrderData({},events);
 
 
 
@@ -145,7 +146,7 @@ events.on('basket:open', ()=>{
         basket.total = basketData.total +' '+'синапсов'; 
         if (basketData.total === 0){basket.setDisabled(basket.basketButton, true)
         }
-    onClick:() =>events.emit('form:open')
+    //onClick:() =>events.emit('form:open')
         basket.items= basketData.items.map((item,index) =>{
            
             const basketItem = new Card('card', cloneTemplate(basketCardTemplate),
@@ -158,20 +159,67 @@ events.on('basket:open', ()=>{
    
 
 events.on('form:open', ()=>{
-    formOrder.setDisabled(formOrder.submitButton,false);
-    formOrder.submitButton.addEventListener('click',event=>{ event.preventDefault();
-      events.emit('contacts:open')})
+       formOrder.hideInputError;
+     
     //onClick:() =>events.emit('contacts:open')
-    modal.render({content:  formOrder.render()});
+    modal.render({content:  formOrder.render(order)});
  });
 
+   
+ // выбираем способ оплаты
+ events.on('payment:change',(data:{field: keyof TOrderData, value: string})=>{
+   order.setOrderField(data.field, data.value);
+  
+ })
+//  events.on('adress:change',(data:{field: keyof IOrderData, value: string})=>{
+//     order.adress = data.value;
+//     order.setOrderInfo(data.field, data.value);
+events.on('adress:change',(data:{field: keyof TOrderData, value: string})=>{
+    order.setOrderField(data.field, data.value);
+ })
+ events.on('order:change',(errors)=>{
+    if(!Object.keys(errors).length==false){
+    formOrder.valid = !Object.keys(errors).length;
+
+   formOrder.errors= Object.values(errors).join(' и ');
+   formOrder.setDisabled(formOrder.submitButton,true)}
+
+
+ });
+ events.on('order:ready',()=>{
+    formOrder.setDisabled(formOrder.submitButton,false);
+    formOrder.submitButton.addEventListener('click',event=>{ event.preventDefault();
+        events.emit('contacts:open')})
+ })
  events.on('contacts:open', ()=>{
+    modal.render({content:  formContacts.render(order)});
+ }); 
+
+ // выбираем способ оплаты
+ events.on('email:change',(data:{field: keyof TOrderData, value: string})=>{
+    order.setContactsField(data.field, data.value);
+   
+  })
+ //  events.on('adress:change',(data:{field: keyof IOrderData, value: string})=>{
+ //     order.adress = data.value;
+ //     order.setOrderInfo(data.field, data.value);
+ events.on('phone:change',(data:{field: keyof TOrderData, value: string})=>{
+     order.setContactsField(data.field, data.value);
+  })
+  events.on('contacts:ready',()=>{
     formContacts.setDisabled(formContacts.submitButton,false);
     formContacts.submitButton.addEventListener('click',event=>{ event.preventDefault();
         events.emit('order:submit')})
-    modal.render({content:  formContacts.render()});
- });    
-   
+ })
+ events.on('contacts:change',(errors)=>{
+    if(!Object.keys(errors).length==false){
+    formOrder.valid = !Object.keys(errors).length;
+
+    formContacts.errors= Object.values(errors).join(' и ');
+   formContacts.setDisabled(formContacts.submitButton,true)}
+
+
+ });
 // Отправлена форма заказа
 events.on('order:submit', () => {
     
@@ -183,13 +231,18 @@ events.on('order:submit', () => {
                 }
               
             });
-          
+          success.total = basketData.total;
             modal.render({
                 content: success.render({})
             });
         })
         
-
+        // events.on('formErrors:change', (errors: Partial<IContacts>) => {
+        //     const { email, phone } = errors;
+        //     order.valid = !email && !phone;
+        //   // order.errors = Object.values({phone, email}).filter(i => !!i).join('; ');
+        // });
+  
 
 // events.on('auction:changed', () => {
 //     page.counter = appData.getClosedLots().length;

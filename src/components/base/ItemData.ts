@@ -1,8 +1,8 @@
 import { IEvents } from "./events";
-import { FormErrors } from "../../types";
+import { FormErrors, IContacts } from "../../types";
 import { PayMethods } from "../../types";
 import { Model } from "./Model";
-import { IItemData, IOrder,  IAppState } from "../../types";
+import { IItemData, IOrder,  IAppState, TOrderData } from "../../types";
 export type CatalogChangeEvent = {
    catalog: IItemData[]
 };
@@ -53,28 +53,7 @@ constructor(data:Partial<IItemData>, protected events:IEvents){
       this.events.emit('items:changed');
       
   }
-//   getSelected(){const sel = [];
-// const itemSelected =sel.concat(this.items.filter(item => item.selected === true ));
 
-
-
-// console.log(itemSelected);
-// return itemSelected;
-//   }
-    // get statusLabel(){
-    //   this.events.emit('status:changed');
-    //   switch (this.status) { 
-    //       case "selected":
-    //           return `добавлено в корзину`
-    //         case "not selected":
-    //           return `удалено из корзины`
-          
-    //       default:
-    //           return this.status;
-    //   }
-      
-
-  // }
   
     }
 
@@ -85,38 +64,55 @@ constructor(data:Partial<IItemData>, protected events:IEvents){
       order: IOrder = {
           email: '',
           phone: '',
-          items: [],
-          payment: 'card',
+     // items: [],
+    //    payment: undefined,
           adress: '',
-          valid: true,
-         //  errors: 'adress','email';
-       
-      };
-      preview: string | null;
-      formErrors: FormErrors = {};
-      setCatalog(items: IItemData[]) {
-         this.catalog = items.map(item => new ItemData(item, this.events));
-         this.emitChanges('items:changed', { catalog: this.catalog });
+  //        valid: true,
+   //     errors:{},
+    //  total: 0}
+    //  modalMessage: string | null = null;
+     
+     // preview: string | null;
+     // formErrors: FormErrors = {};
+     // setCatalog(items: IItemData[]) {
+        // this.catalog = items.map(item => new ItemData(item, this.events));
+        // this.emitChanges('items:changed', { catalog: this.catalog });
      }
-     validateOrder() {
-      const errors: typeof this.formErrors = {};
-      if (!this.order.adress) {
-         errors.adress = 'Необходимо указать email';
-     }
-      if (!this.order.email) {
-          errors.email = 'Необходимо указать email';
-      }
-      if (!this.order.phone) {
-          errors.phone = 'Необходимо указать телефон';
-      }
-      this.formErrors = errors;
-      this.events.emit('formErrors:change', this.formErrors);
-      return Object.keys(errors).length === 0;
-  }
-  setPreview(item: ItemData) {
-    this.preview = item.id;
-    this.emitChanges('preview:changed', item);
-}
+  //    setOrderField(field: keyof TOrderData, value: string) {
+    
+  //     this.order[field] = value;
+
+  //     if (this.validateOrder()) {
+  //         this.events.emit('order:ready', this.order);
+  //     }
+  // }
+
+  //    validateOrder() {
+  //     const errors: typeof this.formErrors = {};
+  //     if (!this.order.adress) {
+  //        errors.adress = 'Необходимо указать адрес';
+  //    }
+  //     if (!this.order.email) {
+  //         errors.email = 'Необходимо указать email';
+  //     }
+  //     if (!this.order.phone) {
+  //         errors.phone = 'Необходимо указать телефон';
+  //     }
+  //     this.formErrors = errors;
+  //     this.events.emit('formErrors:change', this.formErrors);
+  //     return Object.keys(errors).length === 0;
+  // }
+  //setPreview(item: ItemData) {
+    //this.preview = item.id;
+   // this.emitChanges('preview:changed', item);
+//}
+//setMessage(message: string | null, isError = false): void {
+ // this.modalMessage = message;
+  //this.order.valid = isError;
+ // this.notifyChanged(AppStateChanges.modalMessage);
+//}
+
+
 } 
 
    

@@ -3,7 +3,7 @@ import { Component } from "./base/Component";
 
 
 interface ISuccess {
-    total: string;
+    total: number;
 }
 
 interface ISuccessActions {
@@ -22,5 +22,5 @@ this.totalSum = ensureElement<HTMLParagraphElement>('.order-success__description
             this._close.addEventListener('click', actions.onClick);
         }
     }
-    set total(value:string){this.setText(this.totalSum,'Списано' + ' ' +  value + ' ' +'синапсов');}
+    set total(value:number){this.setText(this.totalSum,'Списано' + ' ' +  value + ' ' +'синапсов');}
 }
