@@ -1,7 +1,7 @@
-import { IItem, IItemData } from "../../types";
+import { IItem, IItemData, TOrderData } from "../../types";
 import { Model } from "./Model";
 
-export class BasketData extends Model<IItemData> {
+export class BasketData extends Model<IItemData&TOrderData> {
     items: IItemData[] =[];
     total:number;
     getTotalSum(){

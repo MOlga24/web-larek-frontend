@@ -18,6 +18,7 @@ export class ItemData extends Model<IItemData>{
    price: number;
 // status: string;
      description: string;
+     selected:boolean;
   // _preview: string | null;
 
 constructor(data:Partial<IItemData>, protected events:IEvents){

@@ -35,7 +35,9 @@ const basketData = new BasketData({},events);
 const page = new Page(document.body, events);
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 
-
+events.onAll(({ eventName, data }) => {
+    console.log(eventName, data);
+})
 
 // console.log(itemsData.getTotal(testItem.items));
 // events.on<CatalogChangeEvent>('items:changed', () => {
@@ -85,28 +87,35 @@ api.getItemsList()
     });
     events.on('items:changed', () => {
         page.counter =basketData.items.length;
-        //для каждого продукта в модели каталога инстанцируем и рендерим карточку
+        
         page.catalog = itemsData.items.map((item) => {
             const catalogItem = new Card('card', cloneTemplate(itemTemplate), {
                onClick: () => events.emit('card:select', item), 
                 // создаем действие открытия карточки из каталога
             }
+  
         );
+    
             return catalogItem.render(item);
         }
        
     );
    
     });
-    //  events.on('card:select', (item: ItemData) => {
+    // events.on('preview:change', (item: ItemData) => {
     //     const ItemPreview = new Card('card',cloneTemplate(itemPreviewTemplate), {
-    //         onClick: () => events.emit('preview:changed', item)} )
-            
-    //        // ItemPreview.render(item);
-    //  });
+    //              onClick: () => events.emit('')
+    //             } );
+    //            ItemPreview.buttonText = 'Удалить из корзины'
+    //     //modal.render({content:ItemPreview.render(item)});
+
+    //     events.emit('card:select',item);
+    // });
      events.on('card:select', (item: ItemData) => {
         const ItemPreview = new Card('card',cloneTemplate(itemPreviewTemplate), {
-                 onClick: () => events.emit('basket:add', item)} )
+                 onClick: () => events.emit('basket:add', item)
+                } );
+             if (item.selected == true)  { ItemPreview.buttonText = 'Удалить из корзины'}
         modal.render({content:ItemPreview.render(item)});
         
     });
@@ -119,20 +128,20 @@ events.on('modal:close', () => {
     page.locked = false;
 });
 events.on('basket:add', (item:ItemData) => {
-        modal.close();        
+        modal.close();     
         basketData.items.some((it) => it.id === item.id) ? basketData.removeFromBasket(item): basketData.addToBasket(item);
         basket.total = basketData.getTotalSum() +' '+'синапсов';     
         page.counter =basketData.items.length;
-        basket.items= basketData.items.map((item,index) =>{
+        basket.items= basketData.items.map((item) =>{
             const basketItem = new Card('card', cloneTemplate(basketCardTemplate),
-            { onClick: () => events.emit('basket:delete', item)})
+            { onClick: () => events.emit('basket:delete', item)});            
             basketItem.index = basketData.items.indexOf(item)+1;
             return basketItem.render(item)});
 });
 events.on('basket:open', ()=>{
     if (basketData.total === 0){basket.setDisabled(basket.basketButton, true)
     }
-    if (basket.basketButton) {
+    if (basket.basketButton) {basket.setDisabled(basket.basketButton, false);
         basket.basketButton.addEventListener('click', () => {
             events.emit('form:open'); 
         });
@@ -237,94 +246,9 @@ events.on('order:submit', () => {
             });
         })
         
-        // events.on('formErrors:change', (errors: Partial<IContacts>) => {
-        //     const { email, phone } = errors;
-        //     order.valid = !email && !phone;
-        //   // order.errors = Object.values({phone, email}).filter(i => !!i).join('; ');
-        // });
+   
   
 
-// events.on('auction:changed', () => {
-//     page.counter = appData.getClosedLots().length;
-//     bids.items = appData.getActiveLots().map(item => {
-//         const card = new BidItem(cloneTemplate(cardBasketTemplate), {
-//             onClick: () => events.emit('preview:changed', item)
-//         });
-//         return card.render({
-//             title: item.title,
-//             image: item.image,
-//             status: {
-//                 amount: item.price,
-//                 status: item.isMyBid
-//             }
-//         });
-//     });
-//     let total = 0;
-//     basket.items = appData.getClosedLots().map(item => {
-//         const card = new BidItem(cloneTemplate(soldTemplate), {
-//             onClick: (event) => {
-//                 const checkbox = event.target as HTMLInputElement;
-//                 appData.toggleOrderedLot(item.id, checkbox.checked);
-//                 basket.total = appData.getTotal();
-//                 basket.selected = appData.order.items;
-//             }
-//         });
-//         return card.render({
-//             title: item.title,
-//             image: item.image,
-//             status: {
-//                 amount: item.price,
-//                 status: item.isMyBid
-//             }
-//         });
-//     });
-//     basket.selected = appData.order.items;
-//     basket.total = total;
-// })
-//     import { IItemData } from "../../types";
-// import { ensureElement } from "../../utils/utils";
-// import { Component } from "./Component";
-//     export class Item extends Component<IItemData> {
-//         protected itemTitle: HTMLElement;
-//         protected itemButton:HTMLButtonElement;
-//         protected itemDescription: HTMLParagraphElement;
-//         protected itemCategory: HTMLSpanElement;
-//         protected itemPrice:HTMLSpanElement;
-//         protected itemImage:HTMLImageElement;
-//         protected items: IItemData[] = [];
-//         constructor(container:HTMLElement){
-//            super(container)
-//            this.itemTitle = ensureElement('.card__title',this.container);
-//           // this.itemButton = ensureElement('.gallery__item',this.container) as HTMLButtonElement;
-//           // this.itemDescription = ensureElement('.card__text',this.container) as HTMLParagraphElement;
-//            this.itemCategory = ensureElement('.card__category',this.container);
-//           this.itemPrice=ensureElement('.card__price',this.container);
-//           this.itemImage=ensureElement('.card__image',container) as HTMLImageElement;
-//         }
 
-//         set title(value:string){
-//             this.setText(this.itemTitle,value); 
-//         }
-//         set category(value:string){
-//             this.setText(this.itemCategory,value); 
-//         }
-//         set price(value:number){
-//             this.setText(this.itemPrice,value); 
-//         }
-//         set image(value:string) {
-//             this.setImage(this.itemImage, value, this.title);
-//         }
-//         set description(value:string){
-//             this.setText(this.itemDescription,value); 
-//         }
-//         // //для переключения способа оплаты => перенести в order
-//         // set paymethod(value:boolean) {
-//         //     this.toggleClass(this.orderPaymethod,'.button_alt-active',value);
-//         //     this.toggleClass(this.orderPaymethod,'.button_alt',!value);
-//         // }
-//         // render(data:Partial<IItemData>):HTMLElement{
-//         //     Object.assign(this as object, data);
-//         //     return this.container;
-//         // }
 
-//     }
+

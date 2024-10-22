@@ -8,7 +8,7 @@ export interface IItemData {
     title: string;	 
 	category: string;
 	price: number;
-    selected?:boolean;
+    selected:boolean;
 	index?:number;
 	// total:number;
 	

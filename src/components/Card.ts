@@ -13,8 +13,9 @@ export interface ICard<T> {
     description: string;   
     category:string;
     price: number;
-    status: T;
+    buttonText: string;
     id:string;
+
 }
 
 export class Card<T> extends Component<ICard<T>> {
@@ -26,7 +27,8 @@ export class Card<T> extends Component<ICard<T>> {
     protected cardButton?: HTMLButtonElement;//кнопка нужна не на всех отображениях карточек
     protected cardItemButton?:HTMLElement; 
     protected basketItemIndex?: HTMLSpanElement;
-    constructor(protected blockName: string, container: HTMLElement, actions?: ICardActions) {
+    constructor(protected blockName: string, container: HTMLElement, actions?: ICardActions) 
+    {
         super(container);
 
         this.сardTitle = ensureElement<HTMLElement>(`.${blockName}__title`, container);
@@ -77,6 +79,7 @@ export class Card<T> extends Component<ICard<T>> {
     
     set price(value: string){
         this.setText(this.cardPrice, value+ ' ' +'синапсов');
+        if (value ==null){  this.setText(this.cardPrice, 'бесценно');}
     }
     set category (value: string){
         this.setText(this.cardCategory, value);
@@ -85,8 +88,9 @@ export class Card<T> extends Component<ICard<T>> {
     set index(value: number){
         this.setText(this.basketItemIndex, value);
       }
+    set buttonText(value: string){this.cardButton.textContent = value};
 }
-
+    
 //  type CatalogItemStatus = {
 //     status: boolean,
 //     label: string
