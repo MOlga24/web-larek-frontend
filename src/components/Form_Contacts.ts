@@ -44,5 +44,15 @@ export class FormContacts extends Form<IContacts>  {
     set valid(value: boolean) {
         this.submitButton.disabled = !value;
     }
-    
+    // set errors(value: string) {
+    //     if (this._errors, value)
+    //  {this.showInputError(value)}
+    //     else {this.hideInputError()}
+         
+    //  }
+    // showInputError(value:string){
+    // const errorMessage = ['поле  не может быть пустым', 'необходимо выбрать способ оплаты'];
+    //  if (value ==errorMessage[0])
+    //  {this.setText(this._errors, value)}};
+    // hideInputError(){this.setText(this._errors, '')}
 }

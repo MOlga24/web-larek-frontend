@@ -9,16 +9,14 @@ export class FormOrder extends Form<IOrderData>  {
     protected cardButton: HTMLButtonElement;
     protected orderAdress: HTMLInputElement;
     submitButton: HTMLButtonElement;
-    protected formErrors:HTMLElement;
+  protected formErrors:HTMLElement;
     protected orderForm:HTMLFormElement;
-//    protected payMethod:HTMLButtonElement;
-    constructor(container: HTMLFormElement, protected events: IEvents) {
+      constructor(container: HTMLFormElement, protected events: IEvents) {
         super(container,events);
         this.orderForm = this.container.querySelector('.form');
-       this.formErrors = ensureElement<HTMLElement>('.form__errors', this.container);
+      this.formErrors = ensureElement<HTMLElement>('.form__errors', this.container);
         this.orderAdress= ensureElement('.form__input', this.container) as HTMLInputElement;
         this.submitButton = ensureElement('.order__button', this.container) as HTMLButtonElement;
-        // this.payMethod = container.querySelector('.button_alt');
         this.cardButton =  ensureElement('.button_alt[name=card]', this.container)as HTMLButtonElement;
         this.cashButton = ensureElement('.button_alt[name=cash]', this.container)as HTMLButtonElement;
         
@@ -44,28 +42,40 @@ export class FormOrder extends Form<IOrderData>  {
         this.orderAdress.value = value;
     }
     set valid(value: boolean) {
-        // if (value == false) {this.hideInputError(this.errors)}
-        //this.submitButton.disabled = value;
+      
+      {this.submitButton.disabled = !value;}
     }
     set payment(value:PayMethods){
         this.cardButton.classList.toggle('button_alt-active',value ==='card');
         this.cashButton.classList.toggle('button_alt-active',value ==='cash');
     }
-     set error(data:{field:string, value: string,errorMessage:string}) {
-        if(data.errorMessage){
-            this.showInputError(data.field,data.errorMessage)}
-            else{this.hideInputError(data.field);
+ 
+    // set errors(value: string) {
+    //     if (this._errors, value)
+    //  {this.showInputError(value)}
+    //     else {this.hideInputError()}
+         
+    //  }
+    // showInputError(value:string){
+    // const errorMessage = ['поле  не может быть пустым', 'необходимо выбрать способ оплаты'];
+    //  if (value ==errorMessage)
+    //  {this.setText(this._errors, value)}};
+    // hideInputError(){this.setText(this._errors, '')}
+//      set error(data:{field:string, value: string,errorMessage:string}) {
+//         if(data.errorMessage){
+//             this.showInputError(data.field,data.errorMessage)}
+//             else{this.hideInputError(data.field);
     
-            }
-        }
-        showInputError(field:string,errorMessage:string){
-            this._errors.textContent = 'поле не может быть пустым';
+//             }
+//         }
+//         showInputError(field:string,errorMessage:string){
+//             this._errors.textContent = 'поле адреса не может быть пустым';
     
-        }
-    hideInputError(field:string){
-        this._errors.textContent  = '';
+//         }
+//     hideInputError(field:string){
+//         this._errors.textContent  = '';
 
-   }
+//    }
  
 //     close(){
 //         this.orderForm.reset();

@@ -5,22 +5,16 @@ import { FormOrder } from "../Form_Order";
 import { Model } from "./Model";
 export class OrderData extends Model<IOrder> {
   	items: string[]=[];
-   total: number | null=null;
-  payment: string;
-     adress: string ='';
+    total: number | null=null;
+    payment: string;
+    adress: string ='';
     email: string ='';
-     phone: string ='';
+    phone: string ='';
     valid: boolean = false;
-
-
-errors: Partial<Record<keyof (IOrderData&IContacts), string>>={};
-    errorMessage = 'поле не может быть пустым';
-    // getOrderInfo(): TOrderData{
-    //     return {
-    //         // items: this.items,
-    //         // total:this.total
-    //     }
-    // }
+    errors:string[];
+    errorMessage = ['поле не может быть пустым', 'необходимо выбрать способ оплаты',
+        'необходимо заполнить все поля'];
+   
     setOrderField(field: keyof TOrderData, value: string) {
         this[field] = value;
 
@@ -29,38 +23,46 @@ errors: Partial<Record<keyof (IOrderData&IContacts), string>>={};
   
         }
     }
-        setContactsField(field: keyof TOrderData, value: string) {
+    setContactsField(field: keyof TOrderData, value: string) {
             this[field] = value;
         if (this.validateContacts()){
-            this.events.emit('contacts:ready', this);
+             this.events.emit('contacts:ready', this);
   
         }
     }
 
-validateOrder(){
-    const errors: typeof this.errors ={};
-    if (!this.adress){
-        errors.adress='поле не может быть пустым'
+    validateOrder(){
+        const errors:string[]=[];   console.log(Object.keys(this)) ;
+        if(!this.adress && !this.payment){
+            errors.push(this.errorMessage[2])
+        }
+        else
+        { if (!this.adress){        
+            errors.push(this.errorMessage[0]); 
+        }
+        if (!this.payment){ 
+            errors.push(this.errorMessage[1]); 
+        }    
+        }   
+        this.errors= errors;
+        this.events.emit('order:change',this.errors);
+        return Object.keys(errors).length === 0;
     }
-    if (!this.payment){
-        errors.payment='необходимо выбрать способ оплаты'
-    }
-    
-    this.errors= errors;
-    this.events.emit('order:change',this.errors);
-    return Object.keys(errors).length === 0;
-}
 
-validateContacts(){
-    const errors: typeof this.errors ={};
-  
-    
-    if (!this.phone){
-        errors.phone='поле не может быть пустым'
+
+    validateContacts(){
+    const errors:string[]=[];
+    if(!this.phone && !this.email){
+    errors.push(this.errorMessage[2])
+    }       
+    else
+    { if (!this.phone){        
+    errors.push(this.errorMessage[0]); 
     }
-    if (!this.email){
-        errors.email='поле не может быть пустым'
+    if (!this.email){ 
+    errors.push(this.errorMessage[1]); 
     }
+    }  
     this.errors= errors;
     this.events.emit('contacts:change',this.errors);
     return Object.keys(errors).length === 0;

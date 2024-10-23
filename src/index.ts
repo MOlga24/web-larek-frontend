@@ -102,15 +102,7 @@ api.getItemsList()
     );
    
     });
-    // events.on('preview:change', (item: ItemData) => {
-    //     const ItemPreview = new Card('card',cloneTemplate(itemPreviewTemplate), {
-    //              onClick: () => events.emit('')
-    //             } );
-    //            ItemPreview.buttonText = 'Удалить из корзины'
-    //     //modal.render({content:ItemPreview.render(item)});
-
-    //     events.emit('card:select',item);
-    // });
+  
      events.on('card:select', (item: ItemData) => {
         const ItemPreview = new Card('card',cloneTemplate(itemPreviewTemplate), {
                  onClick: () => events.emit('basket:add', item)
@@ -139,13 +131,15 @@ events.on('basket:add', (item:ItemData) => {
             return basketItem.render(item)});
 });
 events.on('basket:open', ()=>{
-    if (basketData.total === 0){basket.setDisabled(basket.basketButton, true)
+    if ((basketData.total === 0)||(basketData.items.length === 0)){basket.setDisabled(basket.basketButton, true)
     }
-    if (basket.basketButton) {basket.setDisabled(basket.basketButton, false);
+else{
+    if (basket.basketButton) {
+        basket.setDisabled(basket.basketButton, false);
         basket.basketButton.addEventListener('click', () => {
             events.emit('form:open'); 
         });
-    }
+    }}
        modal.render({content:  basket.render()});
     });
        
@@ -167,14 +161,13 @@ events.on('basket:open', ()=>{
 });
    
 
-events.on('form:open', ()=>{
-       formOrder.hideInputError;
-     
-    //onClick:() =>events.emit('contacts:open')
+events.on('form:open',()=>{    
+     events.emit('adress:change',({field:'adress',value:''}));
+    onClick:() =>events.emit('contacts:open')
     modal.render({content:  formOrder.render(order)});
  });
 
-   
+
  // выбираем способ оплаты
  events.on('payment:change',(data:{field: keyof TOrderData, value: string})=>{
    order.setOrderField(data.field, data.value);
@@ -190,8 +183,11 @@ events.on('adress:change',(data:{field: keyof TOrderData, value: string})=>{
     if(!Object.keys(errors).length==false){
     formOrder.valid = !Object.keys(errors).length;
 
-   formOrder.errors= Object.values(errors).join(' и ');
+   formOrder.errors= Object.values(errors).join('  ');
    formOrder.setDisabled(formOrder.submitButton,true)}
+   else {
+    formOrder.errors='';
+   }
 
 
  });
@@ -201,17 +197,16 @@ events.on('adress:change',(data:{field: keyof TOrderData, value: string})=>{
         events.emit('contacts:open')})
  })
  events.on('contacts:open', ()=>{
+    events.emit('email:change',({field:'email',value:''}));
     modal.render({content:  formContacts.render(order)});
  }); 
 
- // выбираем способ оплаты
+
  events.on('email:change',(data:{field: keyof TOrderData, value: string})=>{
     order.setContactsField(data.field, data.value);
    
   })
- //  events.on('adress:change',(data:{field: keyof IOrderData, value: string})=>{
- //     order.adress = data.value;
- //     order.setOrderInfo(data.field, data.value);
+
  events.on('phone:change',(data:{field: keyof TOrderData, value: string})=>{
      order.setContactsField(data.field, data.value);
   })
@@ -224,8 +219,11 @@ events.on('adress:change',(data:{field: keyof TOrderData, value: string})=>{
     if(!Object.keys(errors).length==false){
     formOrder.valid = !Object.keys(errors).length;
 
-    formContacts.errors= Object.values(errors).join(' и ');
+    formContacts.errors= Object.values(errors).join('');
    formContacts.setDisabled(formContacts.submitButton,true)}
+   else {
+    formContacts.errors ='';
+   }
 
 
  });
@@ -235,7 +233,10 @@ events.on('order:submit', () => {
             const success = new Success(cloneTemplate(successTemplate), {
                 onClick: () => {
                     modal.close();
+                    itemsData.items.forEach(it=>{it.selected = false})
                     basketData.clearBasket();
+                    basket.items=[];
+                    basket.total='';
                     events.emit('items:changed');
                 }
               
@@ -244,6 +245,7 @@ events.on('order:submit', () => {
             modal.render({
                 content: success.render({})
             });
+         
         })
         
    

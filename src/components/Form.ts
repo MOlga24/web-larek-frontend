@@ -44,11 +44,15 @@ export class Form<T> extends Component<IFormState> {
     }
 
     set errors(value: string) {
-       
-        {this.setText(this._errors, value);}
+      
+  if (this._errors, value)
+    {this.showInputError(value)}
+       else {this.hideInputError()}
         
     }
-   
+   showInputError(value:string){     
+        {this.setText(this._errors, value)}};
+   hideInputError(){this.setText(this._errors, '')}
     render(state: Partial<T> & IFormState) {
         const {valid, errors, ...inputs} = state;
         super.render({valid, errors});

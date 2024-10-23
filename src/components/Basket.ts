@@ -16,13 +16,7 @@ export class Basket extends Component<IItemData>{
 
         this.basketList = ensureElement<HTMLElement>('.basket__list', this.container);
         this.basketTotal = this.container.querySelector('.basket__price');
-        this.basketButton = this.container.querySelector('.basket__button');
-        
-       
-
-        // this.items = [];
-    // }
-
+        this.basketButton = this.container.querySelector('.basket__button');     
 
 }
     set items(items: HTMLElement[]) {
@@ -32,6 +26,7 @@ export class Basket extends Component<IItemData>{
             this.basketList.replaceChildren(createElement<HTMLParagraphElement>('p', {
                 textContent: 'Корзина пуста'
             }));
+            
         }
     }
 
