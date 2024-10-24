@@ -70,7 +70,8 @@ const basket = new Basket(cloneTemplate(basketTemplate), events);
 const formOrder = new FormOrder(cloneTemplate(formOrderTemplate),events);
 const formContacts =new FormContacts(cloneTemplate(formContactsTemplate),events);
 const itemElement =document.querySelector('.gallery')as HTMLDListElement
-const order = new OrderData({},events);
+const orderData = new OrderData({},events);
+
 
 
 
@@ -95,7 +96,7 @@ api.getItemsList()
             }
   
         );
-    
+        console.log(itemsData);
             return catalogItem.render(item);
         }
        
@@ -107,6 +108,7 @@ api.getItemsList()
         const ItemPreview = new Card('card',cloneTemplate(itemPreviewTemplate), {
                  onClick: () => events.emit('basket:add', item)
                 } );
+               
              if (item.selected == true)  { ItemPreview.buttonText = 'Удалить из корзины'}
         modal.render({content:ItemPreview.render(item)});
         
@@ -122,6 +124,7 @@ events.on('modal:close', () => {
 events.on('basket:add', (item:ItemData) => {
         modal.close();     
         basketData.items.some((it) => it.id === item.id) ? basketData.removeFromBasket(item): basketData.addToBasket(item);
+        orderData.order.items.push(item.id)
         basket.total = basketData.getTotalSum() +' '+'синапсов';     
         page.counter =basketData.items.length;
         basket.items= basketData.items.map((item) =>{
@@ -162,27 +165,25 @@ else{
    
 
 events.on('form:open',()=>{    
-     events.emit('adress:change',({field:'adress',value:''}));
+     events.emit('address:change',({field:'address',value:''}));
     onClick:() =>events.emit('contacts:open')
-    modal.render({content:  formOrder.render(order)});
+   
+    modal.render({content:  formOrder.render(orderData)});
  });
 
 
  // выбираем способ оплаты
  events.on('payment:change',(data:{field: keyof TOrderData, value: string})=>{
-   order.setOrderField(data.field, data.value);
+    orderData.setOrderField(data.field, data.value);
   
  })
-//  events.on('adress:change',(data:{field: keyof IOrderData, value: string})=>{
-//     order.adress = data.value;
-//     order.setOrderInfo(data.field, data.value);
-events.on('adress:change',(data:{field: keyof TOrderData, value: string})=>{
-    order.setOrderField(data.field, data.value);
+
+events.on('address:change',(data:{field: keyof TOrderData, value: string})=>{
+    orderData.setOrderField(data.field, data.value);
  })
  events.on('order:change',(errors)=>{
     if(!Object.keys(errors).length==false){
     formOrder.valid = !Object.keys(errors).length;
-
    formOrder.errors= Object.values(errors).join('  ');
    formOrder.setDisabled(formOrder.submitButton,true)}
    else {
@@ -198,17 +199,17 @@ events.on('adress:change',(data:{field: keyof TOrderData, value: string})=>{
  })
  events.on('contacts:open', ()=>{
     events.emit('email:change',({field:'email',value:''}));
-    modal.render({content:  formContacts.render(order)});
+    modal.render({content:  formContacts.render(orderData)});
  }); 
 
 
  events.on('email:change',(data:{field: keyof TOrderData, value: string})=>{
-    order.setContactsField(data.field, data.value);
+    orderData.setContactsField(data.field, data.value);
    
   })
 
  events.on('phone:change',(data:{field: keyof TOrderData, value: string})=>{
-     order.setContactsField(data.field, data.value);
+    orderData.setContactsField(data.field, data.value);
   })
   events.on('contacts:ready',()=>{
     formContacts.setDisabled(formContacts.submitButton,false);
@@ -227,10 +228,14 @@ events.on('adress:change',(data:{field: keyof TOrderData, value: string})=>{
 
 
  });
+
 // Отправлена форма заказа
-events.on('order:submit', () => {
-    
-            const success = new Success(cloneTemplate(successTemplate), {
+events.on('order:submit', () => {    
+   
+    orderData.order.total = basketData.getTotalSum()
+    api.orderItems(orderData.order)
+.then(result=>{
+    const success = new Success(cloneTemplate(successTemplate), {
                 onClick: () => {
                     modal.close();
                     itemsData.items.forEach(it=>{it.selected = false})
@@ -238,14 +243,17 @@ events.on('order:submit', () => {
                     basket.items=[];
                     basket.total='';
                     events.emit('items:changed');
-                }
-              
+                }              
             });
           success.total = basketData.total;
             modal.render({
                 content: success.render({})
             });
-         
+         })    
+    .catch(err => {
+        console.error(err);
+    });    
+            
         })
         
    

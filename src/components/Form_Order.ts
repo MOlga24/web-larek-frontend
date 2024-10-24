@@ -25,7 +25,7 @@ export class FormOrder extends Form<IOrderData>  {
         //     this.events.emit(`contacts:open`);
         // })
         this.orderAdress.addEventListener('input',()=>{
-            this.onInputChange('adress',this.orderAdress.value)
+            this.onInputChange('address',this.orderAdress.value)
         })
         this.cardButton.addEventListener('click',()=>{
             this.payment = 'card';
@@ -38,7 +38,7 @@ export class FormOrder extends Form<IOrderData>  {
     }
   
 
-    set adress(value: string) {
+    set address(value: string) {
         this.orderAdress.value = value;
     }
     set valid(value: boolean) {

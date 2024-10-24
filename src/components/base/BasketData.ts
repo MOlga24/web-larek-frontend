@@ -1,9 +1,9 @@
-import { IItem, IItemData, TOrderData } from "../../types";
+import { IItem, IItemData } from "../../types";
 import { Model } from "./Model";
-
+import { TOrderData } from "../../types";
 export class BasketData extends Model<IItemData&TOrderData> {
     items: IItemData[] =[];
-    total:number;
+   total:number;
     getTotalSum(){
        return this.items.reduce((partialSum, a) => partialSum + a.price, 0);
     }

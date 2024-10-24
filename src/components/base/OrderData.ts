@@ -1,22 +1,24 @@
 import { TOrderData, PayMethods, IOrder, IContacts} from "../../types"; 
 import  { IOrderData } from "../../types"; 
+import { IItemData } from "../../types";
 import { IEvents } from "./events";
 import { FormOrder } from "../Form_Order";
 import { Model } from "./Model";
 export class OrderData extends Model<IOrder> {
-  	items: string[]=[];
-    total: number | null=null;
-    payment: string;
-    adress: string ='';
-    email: string ='';
-    phone: string ='';
-    valid: boolean = false;
-    errors:string[];
-    errorMessage = ['поле не может быть пустым', 'необходимо выбрать способ оплаты',
+    order:IOrder={items: [],
+   total: 0,
+    payment: '',
+    address: '',
+    email: '',
+    phone: '',}
+  	
+   valid: false;
+    errors:{};
+   errorMessage = ['поле не может быть пустым', 'необходимо выбрать способ оплаты',
         'необходимо заполнить все поля'];
    
     setOrderField(field: keyof TOrderData, value: string) {
-        this[field] = value;
+        this.order[field] = value;
 
         if (this.validateOrder()) {
             this.events.emit('order:ready', this);
@@ -24,7 +26,7 @@ export class OrderData extends Model<IOrder> {
         }
     }
     setContactsField(field: keyof TOrderData, value: string) {
-            this[field] = value;
+            this.order[field] = value;
         if (this.validateContacts()){
              this.events.emit('contacts:ready', this);
   
@@ -33,14 +35,14 @@ export class OrderData extends Model<IOrder> {
 
     validateOrder(){
         const errors:string[]=[];   console.log(Object.keys(this)) ;
-        if(!this.adress && !this.payment){
+        if(!this.order.address && !this.order.payment){
             errors.push(this.errorMessage[2])
         }
         else
-        { if (!this.adress){        
+        { if (!this.order.address){        
             errors.push(this.errorMessage[0]); 
         }
-        if (!this.payment){ 
+        if (!this.order.payment){ 
             errors.push(this.errorMessage[1]); 
         }    
         }   
@@ -52,14 +54,14 @@ export class OrderData extends Model<IOrder> {
 
     validateContacts(){
     const errors:string[]=[];
-    if(!this.phone && !this.email){
+    if(!this.order.phone && !this.order.email){
     errors.push(this.errorMessage[2])
     }       
     else
-    { if (!this.phone){        
+    { if (!this.order.phone){        
     errors.push(this.errorMessage[0]); 
     }
-    if (!this.email){ 
+    if (!this.order.email){ 
     errors.push(this.errorMessage[1]); 
     }
     }  

@@ -1,5 +1,7 @@
 import { IItemData, IOrder, IOrderResult } from "../../types";
+import { BasketData } from "./BasketData";
 import { ItemData } from "./ItemData";
+import { OrderData } from "./OrderData";
 import { Api,ApiListResponse } from "./api";
 export interface IDataAPI {
     getItemsList: () => Promise<IItemData[]>;
@@ -38,15 +40,9 @@ getItem(id: string): Promise<IItemData> {
 }
 
 orderItems(order: IOrder): Promise<IOrderResult> {
-    return this.post('/order', order).then(
+    return this.post('/api/weblarek/order', order).then(
         (data: IOrderResult) => data
     );
 }
-// setOrderField(field: keyof IOrderForm, value: string) {
-//     this.order[field] = value;
 
-//     if (this.validateOrder()) {
-//         this.events.emit('order:ready', this.order);
-//     }
-// }
 }

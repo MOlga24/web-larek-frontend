@@ -65,12 +65,12 @@ constructor(data:Partial<IItemData>, protected events:IEvents){
       order: IOrder = {
           email: '',
           phone: '',
-     // items: [],
-    //    payment: undefined,
-          adress: '',
+          items: [''],
+     payment: '',
+          address: '',
   //        valid: true,
    //     errors:{},
-    //  total: 0}
+      total: 0
     //  modalMessage: string | null = null;
      
      // preview: string | null;

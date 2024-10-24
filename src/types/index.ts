@@ -34,9 +34,13 @@ export interface IContacts {
 	phone: string;
 }
 //интерфейс деталей заказа
+export interface IOr{
+itemsId:{};
+total:number;
 
+} 
 export interface IOrderData {
-		adress: string;
+		address: string;
 	payment: string;
 }
 //интерфейс проверки формы заказа
@@ -55,14 +59,12 @@ interface IResultActions {
 
 //интерфейс заказа
 export interface IOrder {
-	//items: IItemData[];
-	// total: number | null;
-	//payment: PayMethods;
-	adress: string;
+	items:string[];
+	 total: number | null;
+	payment: string;
+	address: string;
 	email: string;
 	phone: string;
-	//valid: boolean;
-	 //errors: Partial<Record<keyof TOrderData, string>>;
 }
 //интерфейс корзины
 
@@ -78,7 +80,7 @@ export interface IItemAPI {
 }
 
 //типы для модальных окон: платеж и адрес, почта и телефон
-export type TPayInfo = Pick<IOrderData, 'adress' | 'payment'>;
+export type TPayInfo = Pick<IOrderData, 'address' | 'payment'>;
 export type TOrderInfo = Pick<IContacts, 'email' | 'phone'>;
  export type TOrderData = TPayInfo & TOrderInfo
 export type TItemData ={ _id: string;
