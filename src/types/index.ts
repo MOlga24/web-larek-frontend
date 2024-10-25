@@ -25,7 +25,8 @@ export interface IAppState {
     basket: string[];
     preview: string | null;
     order: IOrder | null;
-    loading: boolean;
+    errors:{};
+	valid: boolean;formErrors:  {};    
 }
 export type PayMethods = 'card' | 'cash';
 //интерфейс контактов пользователя
@@ -42,7 +43,7 @@ export interface IOrderData {
 //интерфейс проверки формы заказа
 export interface IFormValidation {
 	valid: boolean;
-	errors: Partial<Record<keyof IOrder, string>>;
+
 }
 //Интерфейс полученного заказа
 export interface IOrderResult {
@@ -55,7 +56,7 @@ export interface IOrderResult {
 
 //интерфейс заказа
 export interface IOrder {
-	items:string[];
+	items:IItemData[],
 	 total: number | null;
 	payment: string;
 	address: string;

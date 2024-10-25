@@ -1,4 +1,4 @@
-import { IItemData, IOrder, IOrderResult } from "../../types";
+import { IItemData, IOrder, IOrderData, IOrderResult } from "../../types";
 import { Api,ApiListResponse } from "./api";
 
 export interface IDataAPI {
@@ -33,7 +33,7 @@ getItem(id: string): Promise<IItemData> {
     );
 }
 
-orderItems(order: IOrder): Promise<IOrderResult> {
+orderItems(order:IOrderData): Promise<IOrderResult> {
     return this.post('/api/weblarek/order', order).then(
         (data: IOrderResult) => data
     );

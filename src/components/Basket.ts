@@ -43,6 +43,8 @@ export class Basket extends Component<IItemData>{
     toggleButton(value:boolean) {
         this.setDisabled(this.basketButton, !value);
     }
-   
+    setHidden(): void {
+        this.basketTotal.style.display = 'none';
+       }
         
     }

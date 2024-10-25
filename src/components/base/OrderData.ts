@@ -17,21 +17,21 @@ export class OrderData extends Model<IOrder> {
    errorMessage = ['поле не может быть пустым', 'необходимо выбрать способ оплаты',
         'необходимо заполнить все поля'];
    
-    setOrderField(field: keyof TOrderData, value: string) {
-        this.order[field] = value;
+    // setOrderField(field: keyof TOrderData, value: string) {
+    //     this.order[field] = value;
 
-        if (this.validateOrder()) {
-            this.events.emit('order:ready', this);
+    //     if (this.validateOrder()) {
+    //         this.events.emit('order:ready', this);
   
-        }
-    }
-    setContactsField(field: keyof TOrderData, value: string) {
-            this.order[field] = value;
-        if (this.validateContacts()){
-             this.events.emit('contacts:ready', this);
+    //     }
+    // }
+    // setContactsField(field: keyof TOrderData, value: string) {
+    //         this.order[field] = value;
+    //     if (this.validateContacts()){
+    //          this.events.emit('contacts:ready', this);
   
-        }
-    }
+    //     }
+    // }
 
     validateOrder(){
         const errors:string[]=[];   console.log(Object.keys(this)) ;
