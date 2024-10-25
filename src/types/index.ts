@@ -34,11 +34,7 @@ export interface IContacts {
 	phone: string;
 }
 //интерфейс деталей заказа
-export interface IOr{
-itemsId:{};
-total:number;
 
-} 
 export interface IOrderData {
 		address: string;
 	payment: string;
@@ -53,9 +49,9 @@ export interface IOrderResult {
 	total: number;
 }
 //Интерфейс действия с окном заказа
-interface IResultActions {
-	onClick: () => void;
-}
+// interface IResultActions {
+// 	onClick: () => void;
+// }
 
 //интерфейс заказа
 export interface IOrder {
@@ -68,10 +64,10 @@ export interface IOrder {
 }
 //интерфейс корзины
 
-export interface IBasketView {
-	items: HTMLElement[];
-	total: number;
-}
+// export interface IBasketView {
+// 	items: HTMLElement[];
+// 	total: number;
+// }
 //интерфейс АПИ(получение данных)
 export interface IItemAPI {
 	getItems: () => Promise<IItemData[]>;
@@ -91,24 +87,24 @@ name: string;
    image: string;
    status: string;}
 //Данные карточки товара для корзины
-type TBasketItem = Pick<IItemData, "title"| "price">;
+// type TBasketItem = Pick<IItemData, "title"| "price">;
 
 //VIEW
 // интерфейс действий с карточкой
-interface ICardActions {
-	onClick: (event: MouseEvent) => void;
-}
+// interface ICardActions {
+// 	onClick: (event: MouseEvent) => void;
+// }
 // отображение для заданного типа данных
 
 interface IView {
 	render(data?: object): HTMLElement;
 }
 // отображение страницы с каталогом и счетчиком
-interface IPage {
-	counter: number;
-	catalog: HTMLElement[];
-	locked: boolean;
-}
+// interface IPage {
+// 	counter: number;
+// 	catalog: HTMLElement[];
+// 	locked: boolean;
+// }
 // отображение корзины
 
 
@@ -117,10 +113,18 @@ export interface IItemsContainer {
 	new (container: HTMLElement, events?: IEvents): IView;
 }
 //отображение модального окна
-interface IModalData {
-	content: HTMLElement;
-}
+// interface IModalData {
+// 	content: HTMLElement;
+// }
 //отображение для формы заказа
 interface IFormOrder {
 	new (container: HTMLElement, events?: IEvents): IView;
+}
+
+export interface ISuccess {
+    total: number;
+}
+
+export interface ISuccessActions {
+    onClick: () => void;
 }

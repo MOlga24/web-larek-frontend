@@ -100,7 +100,7 @@ export class Card<T> extends Component<ICard<T>> {
 				кнопка: 'card__category_button',
 			};
 			if (value in Object(categoryName)) {
-				this.cardCategory.classList.add(Object(categoryName)[value]);
+				this.toggleClass(this.cardCategory,Object(categoryName)[value],true);
 			}
 		}
 	}

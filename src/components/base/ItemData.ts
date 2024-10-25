@@ -3,36 +3,31 @@ import { FormErrors, IContacts } from "../../types";
 import { PayMethods } from "../../types";
 import { Model } from "./Model";
 import { IItemData, IOrder,  IAppState, TOrderData } from "../../types";
-export type CatalogChangeEvent = {
-   catalog: IItemData[]
-};
+// export type CatalogChangeEvent = {
+//    catalog: IItemData[]
+// };
 export class ItemData extends Model<IItemData>{
-  items: IItemData[] = [];
-  id:string;
-   index?:number;
-//     preview: string;
-
-    title: string;
-    category: string;
-     image: string;
+   items: IItemData[] = [];
+   id:string;
+   title: string;
+   category: string;
+   image: string;
    price: number;
-// status: string;
-     description: string;
-     selected:boolean;
+   description: string;
+   selected:boolean;
   // _preview: string | null;
-
+   //index?:number;
+//     preview: string;
+// status: string;
 constructor(data:Partial<IItemData>, protected events:IEvents){
         super(data,events);
     }
-   // set (id:string, value:boolean){const u = this.getItem(id);
-    
-   // (u.selected == value)}
       setItems(items: IItemData[]){       
     items.map((item) => this.items.push(item));
 		this.emitChanges('items:changed', { items : this.items });
       }
 
-     getItems(item:IItemData[]):IItemData[] {
+     getItems():IItemData[] {
        return this.items;
     
      }
@@ -40,13 +35,7 @@ constructor(data:Partial<IItemData>, protected events:IEvents){
         return this.items.find(item => id ===item.id);
         
      }
-//      selectItem(id:string){
-//        const item = this.getItem(id);
-//        item.selected = !item.selected;
-//   }
-     getTotal(){
-        // return this.items.length;
-     }
+    
      selectItem(id: string) {
       const item = this.getItem(id);
       item.selected = true;
@@ -54,14 +43,13 @@ constructor(data:Partial<IItemData>, protected events:IEvents){
       this.events.emit('items:changed');
       
   }
-
   
     }
 
     export class AppState extends Model<IAppState> {
-      basket: string[];
-      catalog: ItemData[]=[];
-      loading: boolean;
+     // basket: string[];
+      //catalog: ItemData[]=[];
+      //loading: boolean;
       order: IOrder = {
           email: '',
           phone: '',

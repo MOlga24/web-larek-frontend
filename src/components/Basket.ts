@@ -1,23 +1,22 @@
 import { Component } from "./base/Component";
-import { IBasketView, IItemData } from "../types";
-import { ensureElement, createElement, formatNumber } from "../utils/utils";
+import {  IItemData } from "../types";
+import { ensureElement, createElement } from "../utils/utils";
 import { EventEmitter } from "./base/events";
 import {  } from "../utils/utils";
-import { ItemData } from "./base/ItemData";
-import { BasketData } from "./base/BasketData";
+
+
 export class Basket extends Component<IItemData>{
     protected basketList: HTMLElement;
     protected basketTotal: HTMLSpanElement;
-    basketButton: HTMLButtonElement;
-
-
+    protected basketButton: HTMLButtonElement;
     constructor(container: HTMLElement, protected events: EventEmitter) {
         super(container);
-
         this.basketList = ensureElement<HTMLElement>('.basket__list', this.container);
         this.basketTotal = this.container.querySelector('.basket__price');
         this.basketButton = this.container.querySelector('.basket__button');     
-
+        this.basketButton.addEventListener('click', () => {
+            events.emit('form:open');
+        });
 }
     set items(items: HTMLElement[]) {
         if (items.length) {
@@ -41,5 +40,9 @@ export class Basket extends Component<IItemData>{
     set total(total:string) {
         this.setText(this.basketTotal, total);
     }
-
-}
+    toggleButton(value:boolean) {
+        this.setDisabled(this.basketButton, !value);
+    }
+   
+        
+    }
