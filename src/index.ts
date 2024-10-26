@@ -92,21 +92,6 @@ events.on('modal:close', () => {
 	page.locked = false;
 });
 
-events.on('basket:add', (item: IItemData) => {
-	modal.close();
-	appData.order.items.some((it) => it.id === item.id)
-		? appData.removeFromBasket(item)
-		: appData.addToBasket(item);
-	basket.total = appData.getTotalSum() + ' ' + 'синапсов';
-	page.counter = appData.order.items.length;
-	basket.items = appData.order.items.map((item) => {
-		const basketItem = new Card('card', cloneTemplate(basketCardTemplate), {
-			onClick: () => events.emit('basket:delete', item),
-		});
-		basketItem.index = appData.order.items.indexOf(item) + 1;
-		return basketItem.render(item);
-	});
-});
 events.on('basket:open', () => {
 	if (appData.order.total === 0 || appData.order.items.length === 0) {
 		basket.toggleButton(false);
@@ -118,21 +103,50 @@ events.on('basket:open', () => {
 	modal.render({ content: basket.render() });
 });
 
-events.on('basket:delete', (item: IItemData) => {
-	appData.removeFromBasket(item);
-	if (appData.order.total == 0) {
-		basket.toggleButton(false);
-		basket.setHidden();
-	}
+events.on('basket:add', (item: IItemData) => {
+	modal.close();
+	appData.order.items.some((it) => it.id === item.id)
+		? appData.removeFromBasket(item)
+		: appData.addToBasket(item);
+        setBasket(item);
+	// basket.total = appData.getTotalSum() + ' ' + 'синапсов';
+	// page.counter = appData.order.items.length;
+	// basket.items = appData.order.items.map((item) => {
+	// 	const basketItem = new Card('card', cloneTemplate(basketCardTemplate), {
+	// 		onClick: () => events.emit('basket:delete', item),
+	// 	});
+	// 	basketItem.index = appData.order.items.indexOf(item) + 1;
+	// 	return basketItem.render(item);
+	// });
+});
+function setBasket(item: IItemData) {
+ basket.total = appData.getTotalSum() + ' ' + 'синапсов';
 	page.counter = appData.order.items.length;
-	basket.total = appData.order.total + ' ' + 'синапсов';
 	basket.items = appData.order.items.map((item) => {
 		const basketItem = new Card('card', cloneTemplate(basketCardTemplate), {
 			onClick: () => events.emit('basket:delete', item),
 		});
 		basketItem.index = appData.order.items.indexOf(item) + 1;
 		return basketItem.render(item);
-	});
+	});   
+}
+
+events.on('basket:delete', (item: IItemData) => {
+	appData.removeFromBasket(item);
+	if (appData.order.total == 0) {
+		basket.toggleButton(false);
+		basket.setHidden();
+	}
+    setBasket(item);
+	// page.counter = appData.order.items.length;
+	// basket.total = appData.order.total + ' ' + 'синапсов';
+	// basket.items = appData.order.items.map((item) => {
+	// 	const basketItem = new Card('card', cloneTemplate(basketCardTemplate), {
+	// 		onClick: () => events.emit('basket:delete', item),
+	// 	});
+	// 	basketItem.index = appData.order.items.indexOf(item) + 1;
+	// 	return basketItem.render(item);
+	// });
 });
 
 events.on('form:open', () => {
