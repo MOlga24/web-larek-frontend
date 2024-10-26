@@ -1,7 +1,7 @@
 import { EventEmitter } from './components/base/events';
 import './scss/styles.scss';
 import { CDN_URL, API_URL } from './utils/constants';
-import { OrderData } from './components/base/OrderData';
+
 import { ItemDataApi } from './components/base/ItemDataApi';
 import { Basket } from './components/Basket';
 import { cloneTemplate } from './utils/utils';
@@ -10,16 +10,14 @@ import { AppState } from './components/base/ItemData';
 import { Modal } from './components/common/Modal';
 import { ensureElement } from './utils/utils';
 import { Success } from './components/OrderSuccess';
-import { IItemData, IOrderData, PayMethods, TOrderData } from './types';
-const events = new EventEmitter();
+import { IItemData, TOrderData } from './types';
+
 import { Card } from './components/Card';
-import { BasketData } from './components/base/BasketData';
 import { FormOrder } from './components/Form_Order';
 import { FormContacts } from './components/Form_Contacts';
 
 //templates
-const basketTemplate = ensureElement<HTMLTemplateElement>
-('#basket');
+const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
 const catalogTemplate = document.querySelector(
 	'#card-catalog'
 ) as HTMLTemplateElement;
@@ -29,15 +27,13 @@ const formOrderTemplate = document.querySelector(
 const formContactsTemplate = document.querySelector(
 	'#contacts'
 ) as HTMLTemplateElement;
-const itemPreviewTemplate = ensureElement<HTMLTemplateElement>
-('#card-preview');
-const basketCardTemplate = ensureElement<HTMLTemplateElement>
-('#card-basket');
-const successTemplate = ensureElement<HTMLTemplateElement>
-('#success');
+const itemPreviewTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
+const basketCardTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
+const successTemplate = ensureElement<HTMLTemplateElement>('#success');
+const events = new EventEmitter();
 // models
 const appData = new AppState({}, events);
-const basketData = new BasketData({}, events);
+// const basketData = new BasketData({}, events);
 // Глобальные контейнеры
 const page = new Page(document.body, events);
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
@@ -52,7 +48,7 @@ events.onAll(({ eventName, data }) => {
 });
 
 const api = new ItemDataApi(CDN_URL, API_URL);
-const orderData = new OrderData({}, events);
+
 api
 	.getItemsList()
 	.then((data) => {
@@ -71,7 +67,9 @@ events.on('items:changed', () => {
 		return catalogItem.render(item);
 	});
 });
-events.on('card:select',(item: IItemData) =>{ appData.setPreview(item);})
+events.on('card:select', (item: IItemData) => {
+	appData.setPreview(item);
+});
 events.on('preview:changed', (item: IItemData) => {
 	const ItemPreview = new Card('card', cloneTemplate(itemPreviewTemplate), {
 		onClick: () => events.emit('basket:add', item),
@@ -98,8 +96,8 @@ events.on('basket:add', (item: IItemData) => {
 	modal.close();
 	appData.order.items.some((it) => it.id === item.id)
 		? appData.removeFromBasket(item)
-		: appData.addToBasket(item);       
-	basket.total = appData.getTotalSum()  + ' ' + 'синапсов';
+		: appData.addToBasket(item);
+	basket.total = appData.getTotalSum() + ' ' + 'синапсов';
 	page.counter = appData.order.items.length;
 	basket.items = appData.order.items.map((item) => {
 		const basketItem = new Card('card', cloneTemplate(basketCardTemplate), {
@@ -114,7 +112,7 @@ events.on('basket:open', () => {
 		basket.toggleButton(false);
 	} else {
 		if (basket.toggleButton) {
-			basket.toggleButton(true);			
+			basket.toggleButton(true);
 		}
 	}
 	modal.render({ content: basket.render() });
@@ -122,9 +120,9 @@ events.on('basket:open', () => {
 
 events.on('basket:delete', (item: IItemData) => {
 	appData.removeFromBasket(item);
-    if (appData.order.total == 0) {
-		basket.toggleButton(false);        
-       basket.setHidden();
+	if (appData.order.total == 0) {
+		basket.toggleButton(false);
+		basket.setHidden();
 	}
 	page.counter = appData.order.items.length;
 	basket.total = appData.order.total + ' ' + 'синапсов';
@@ -139,13 +137,14 @@ events.on('basket:delete', (item: IItemData) => {
 
 events.on('form:open', () => {
 	events.emit('address:change', { field: 'address', value: '' });
-	modal.render({ content: formOrder.render({
-        payment: 'card',
-        address: '',
-        valid: false,
-        errors: [] 
-    })
-});
+	modal.render({
+		content: formOrder.render({
+			payment: '',
+			address: '',
+			valid: false,
+			errors: appData.errorMessage[2],
+		}),
+	});
 });
 
 // выбираем способ оплаты
@@ -176,7 +175,14 @@ events.on('order:ready', () => {
 });
 events.on('order:submit', () => {
 	events.emit('email:change', { field: 'email', value: '' });
-	modal.render({ content: formContacts.render(orderData) });
+	modal.render({
+		content: formContacts.render({
+			email: '',
+			phone: '',
+			valid: false,
+			errors: appData.errorMessage[2],
+		}),
+	});
 });
 
 events.on(
@@ -207,19 +213,24 @@ events.on('contacts:change', (errors) => {
 
 // Отправлена форма заказа
 events.on('contacts:submit', () => {
+	appData.order.items.forEach((item) => {
+		if (item.price == 0) {
+			appData.removeFromBasket(item);
+		}
+	});
+	const order = {
+		items: appData.order.items.map((it) => it.id),
+		payment: appData.order.payment,
+		address: appData.order.address,
+		email: appData.order.email,
+		phone: appData.order.phone,
+		total: appData.getTotalSum(),
+	};
 
-	const order ={   
-        items: appData.order.items.map(it =>it.id),
-        payment: appData.order.payment, 
-        address: appData.order.address, 
-        email: appData.order.email,
-        phone: appData.order.phone, 
-        total: appData.getTotalSum()
-     
-    }
 	api
 		.orderItems(order)
 		.then((result) => {
+			console.log(result);
 			const success = new Success(cloneTemplate(successTemplate), {
 				onClick: () => {
 					modal.close();

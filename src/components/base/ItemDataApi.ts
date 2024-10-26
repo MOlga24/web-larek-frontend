@@ -1,10 +1,9 @@
-import { IItemData, IOrder, IOrderData, IOrderResult } from "../../types";
+import { IItemData, IOrderData, IOrderResult } from "../../types";
 import { Api,ApiListResponse } from "./api";
 
 export interface IDataAPI {
     getItemsList: () => Promise<IItemData[]>;
-    getItem: (id: string) => Promise<IItemData>; 
-    orderItems: (order: IOrder) => Promise<IOrderResult>;
+    orderItems: (order: IOrderData) => Promise<IOrderResult>;
 }
 
 export class ItemDataApi extends Api implements IDataAPI{
@@ -23,14 +22,6 @@ getItemsList(): Promise<IItemData[]> {
 
         }))
       );
-}
-getItem(id: string): Promise<IItemData> {
-    return this.get(`/api/weblarek/product/${id}`).then(
-        (item: IItemData) => ({
-            ...item,
-            image: this.cdn + item.image,
-        })
-    );
 }
 
 orderItems(order:IOrderData): Promise<IOrderResult> {

@@ -1,9 +1,12 @@
 import { Component } from './base/Component';
 // import {ItemStatus} from "../types";
-import { bem, createElement, ensureElement } from '../utils/utils';
-import { CDN_URL } from '../utils/constants';
-import clsx from 'clsx';
-import { ItemData } from './base/ItemData';
+import {
+	bem,
+	createElement,
+	ensureElement,
+	getObjectProperties,
+} from '../utils/utils';
+import { categoryName } from '../utils/constants';
 interface ICardActions {
 	onClick: (event: MouseEvent) => void;
 }
@@ -86,21 +89,15 @@ export class Card<T> extends Component<ICard<T>> {
 
 	set price(value: string) {
 		this.setText(this.cardPrice, value + ' ' + 'синапсов');
-		if (value == null) {
+		if (value == '0') {
 			this.setText(this.cardPrice, 'бесценно');
 		}
 	}
 	set category(value: string) {
 		this.setText(this.cardCategory, value);
 		if (this.cardCategory) {
-			const categoryName = {
-				другое: 'card__category_other',
-				дополнительное: 'card__category_additional',
-				'хард-скил': 'card__category_hard',
-				кнопка: 'card__category_button',
-			};
 			if (value in Object(categoryName)) {
-				this.toggleClass(this.cardCategory,Object(categoryName)[value],true);
+				this.toggleClass(this.cardCategory, Object(categoryName)[value], true);
 			}
 		}
 	}
@@ -111,8 +108,3 @@ export class Card<T> extends Component<ICard<T>> {
 		this.cardButton.textContent = value;
 	}
 }
-
-//  type CatalogItemStatus = {
-//     status: boolean,
-//     label: string
-// };
