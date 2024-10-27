@@ -3,7 +3,7 @@ import { Component } from './base/Component';
 import { ensureElement } from '../utils/utils';
 import { categoryName } from '../utils/constants';
 interface ICardActions {
-	onClick: (event: MouseEvent) => void;
+	onClick: () => void;
 }
 
 export interface ICard<T> {

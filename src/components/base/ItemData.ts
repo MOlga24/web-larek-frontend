@@ -1,21 +1,10 @@
-import { IEvents } from './events';
 import { Model } from './Model';
 import { IItemData, IOrder, IAppState, TOrderData } from '../../types';
 import { appChanges, errorMessage } from '../../utils/constants';
 
-export class ItemData extends Model<IItemData> {
-	id: string;
-	title: string;
-	category: string;
-	image: string;
-	price: number;
-	description: string;
-	selected: boolean;
-
-}
 
 export class AppState extends Model<IAppState> {
-	catalog: IItemData[] = [];
+    catalog: IItemData[] = [];
 	order: IOrder = {
 		email: '',
 		phone: '',
@@ -26,16 +15,6 @@ export class AppState extends Model<IAppState> {
 	};
 	errors: {};
 	valid: false;
-
-	// getItem(id: string): IItemData {
-	// 	return this.catalog.find((item) => id === item.id);
-	// }
-	// selectItem(id: string) {
-	// 	const item = this.getItem(id);
-	// 	//item.selected = true;
-	// 	console.log(item);
-	// 	this.events.emit(appChanges.catalogChanged);
-	// }
 
 	setItems(items: IItemData[]) {
 		items.map((item) => {
@@ -75,7 +54,7 @@ export class AppState extends Model<IAppState> {
 	setContactsField(field: keyof TOrderData, value: string) {
 		this.order[field] = value;
 		if (this.validateContacts()) {
-			this.events.emit(appChanges.formContactsReady, this);
+			this.events.emit(appChanges.formContactsReady, this.order);
 		}
 	}
 
@@ -113,6 +92,13 @@ export class AppState extends Model<IAppState> {
 		this.toggleOrderedItem();
 		this.order.items = [];
 		this.order.total = 0;
+	}
+	clearOrder() {
+		this.order.address = '';
+		this.order.payment = '';
+		this.order.email = '';
+		this.order.phone = '';
+
 	}
 
 	addToBasket(item: IItemData) {

@@ -108,6 +108,7 @@ events.on(appChanges.basketAdd, (item: IItemData) => {
 		: appData.addToBasket(item);
 	setBasket();
 });
+
 function setBasket() {
 	basket.total = appData.getTotalSum() + ' ' + 'синапсов';
 	page.counter = appData.order.items.length;
@@ -130,7 +131,7 @@ events.on(appChanges.basketDelete, (item: IItemData) => {
 });
 
 events.on(appChanges.formOrderOpen, () => {
-	events.emit(appChanges.orderChange, { field: 'address', value: '' });
+	appData.clearOrder();
 	modal.render({
 		content: formOrder.render({
 			payment: '',
@@ -150,9 +151,8 @@ events.on(/^order\..*:change$/,
 
 events.on(appChanges.orderChange, (errors) => {
 	if (!Object.keys(errors).length == false) {
-		formOrder.valid = !Object.keys(errors).length;
+		formOrder.valid = !Object.keys(errors).length;		
 		formOrder.errors = Object.values(errors).join('  ');
-		formOrder.valid = false;
 	} else {
 		formOrder.errors = '';
 	}
@@ -160,8 +160,7 @@ events.on(appChanges.orderChange, (errors) => {
 events.on(appChanges.formOrderReady, () => {
 	formOrder.valid = true;
 });
-events.on(appChanges.formOrderSubmit, () => {
-	events.emit(appChanges.contactsChange, { field: 'email', value: '' });
+events.on(appChanges.formOrderSubmit, () => {	
 	modal.render({
 		content: formContacts.render({
 			email: '',
@@ -183,9 +182,8 @@ events.on(appChanges.formContactsReady, () => {
 });
 events.on(appChanges.contactsChange, (errors) => {
 	if (!Object.keys(errors).length == false) {
-		formOrder.valid = !Object.keys(errors).length;
-		formContacts.errors = Object.values(errors).join('');
-		formContacts.valid = false;
+		formContacts.valid = !Object.keys(errors).length;
+		formContacts.errors = Object.values(errors).join('');	
 	} else {
 		formContacts.errors = '';
 	}
@@ -218,7 +216,7 @@ events.on(appChanges.formContactsSubmit, () => {
 					modal.close();
 				},
 			});
-			success.total = order.total;
+			success.total = result.total;
 			modal.render({
 				content: success.render({}),
 			});
