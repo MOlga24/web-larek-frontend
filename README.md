@@ -285,7 +285,7 @@ interface IFormOrder {
 - `valid` - валидность форм данных для заказа.
 Методы:
  - `setItems()` -  добавить товары в каталог;
- - `setOrderField()` - добавить данные с формы заказа в заказ;
+ - `setOrderField()` - добавить данные с формы в заказ;
  - `setContactsField()` - добавить данные с формы контактов в заказ;
 - `removeOrderData()` - очистить данные заказа;
 - `validateContacts()` - проверка, что поля контактов не пустые;
@@ -522,13 +522,8 @@ constructor (container: HTMLElement, events: IEvents, actions: ISuccessActions).
    - `modal:open` - открытие модального окна;
    - `modal:close` - закрытие модального окна;
    - `form_order:open` - открытие формы с платежом и адресом;
-   - `address:change` - изменение адреса;
-   - `payment:change` - изменение способа оплаты;
    - `order:change` - изменение данных формы с выбором оплаты и адреса;
-   - `form_order:ready` - форма с платежом и адресом валидна
-   - `email:change` - изменение  почты;
-   - `phone:change` - изменение  телефона;
-   - `order:input` - изменение данных в форме с данными пользователя;
+   - `form_order:ready` - форма с платежом и адресом валидна;
    - `form_contacts:ready` - форма контактов валидна;
    - `contacts:change` - изменение данных в форме с контактами пользователя;
    - `contacts:submit` - сабмит формы контактов.

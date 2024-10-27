@@ -91,7 +91,6 @@ events.on(appChanges.modalClose, () => {
 
 events.on(appChanges.basketOpen, () => {
 	if (appData.order.total === 0 && ((appData.order.items.length === 0)||appData.order.items.length === 1)) {
-        //basket.items =[];
         basket.setHidden()
 		basket.toggleButton(false);
 	} else {
@@ -131,7 +130,7 @@ events.on(appChanges.basketDelete, (item: IItemData) => {
 });
 
 events.on(appChanges.formOrderOpen, () => {
-	events.emit(appChanges.addressChange, { field: 'address', value: '' });
+	events.emit(appChanges.orderChange, { field: 'address', value: '' });
 	modal.render({
 		content: formOrder.render({
 			payment: '',
@@ -142,20 +141,13 @@ events.on(appChanges.formOrderOpen, () => {
 	});
 });
 
-// выбираем способ оплаты
-events.on(
-	appChanges.paymentChange,
+
+events.on(/^order\..*:change$/,
 	(data: { field: keyof TOrderData; value: string }) => {
 		appData.setOrderField(data.field, data.value);
 	}
 );
 
-events.on(
-	appChanges.addressChange,
-	(data: { field: keyof TOrderData; value: string }) => {
-		appData.setOrderField(data.field, data.value);
-	}
-);
 events.on(appChanges.orderChange, (errors) => {
 	if (!Object.keys(errors).length == false) {
 		formOrder.valid = !Object.keys(errors).length;
@@ -169,7 +161,7 @@ events.on(appChanges.formOrderReady, () => {
 	formOrder.valid = true;
 });
 events.on(appChanges.formOrderSubmit, () => {
-	events.emit(appChanges.emailChange, { field: 'email', value: '' });
+	events.emit(appChanges.contactsChange, { field: 'email', value: '' });
 	modal.render({
 		content: formContacts.render({
 			email: '',
@@ -180,19 +172,12 @@ events.on(appChanges.formOrderSubmit, () => {
 	});
 });
 
-events.on(
-	appChanges.emailChange,
+events.on(/^contacts\..*:change$/,
 	(data: { field: keyof TOrderData; value: string }) => {
 		appData.setContactsField(data.field, data.value);
 	}
 );
 
-events.on(
-	appChanges.phoneChange,
-	(data: { field: keyof TOrderData; value: string }) => {
-		appData.setContactsField(data.field, data.value);
-	}
-);
 events.on(appChanges.formContactsReady, () => {
 	formContacts.valid = true;
 });
