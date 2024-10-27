@@ -1,9 +1,9 @@
 import { ensureElement } from '../utils/utils';
 import { IEvents } from './base/events';
 import { Form } from './Form';
-import { IOrderData, PayMethods } from '../types';
+import { TPayInfo, PayMethods } from '../types';
 
-export class FormOrder extends Form<IOrderData> {
+export class FormOrder extends Form<TPayInfo> {
 	protected cashButton: HTMLButtonElement;
 	protected cardButton: HTMLButtonElement;
 	protected orderAdress: HTMLInputElement;

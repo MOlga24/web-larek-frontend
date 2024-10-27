@@ -1,11 +1,6 @@
 import { Component } from './base/Component';
 // import {ItemStatus} from "../types";
-import {
-	bem,
-	createElement,
-	ensureElement,
-	getObjectProperties,
-} from '../utils/utils';
+import { ensureElement } from '../utils/utils';
 import { categoryName } from '../utils/constants';
 interface ICardActions {
 	onClick: (event: MouseEvent) => void;
@@ -27,7 +22,7 @@ export class Card<T> extends Component<ICard<T>> {
 	protected cardDescription: HTMLParagraphElement;
 	protected cardCategory?: HTMLSpanElement;
 	protected cardPrice: HTMLSpanElement;
-	protected cardButton?: HTMLButtonElement; //кнопка нужна не на всех отображениях карточек
+	protected cardButton?: HTMLButtonElement;
 	protected cardItemButton?: HTMLElement;
 	protected basketItemIndex?: HTMLSpanElement;
 	constructor(
@@ -50,12 +45,10 @@ export class Card<T> extends Component<ICard<T>> {
 			container
 		);
 		this.basketItemIndex = this.container.querySelector('.basket__item-index');
-		// this.cardItemButton.addEventListener('click',() =>this.actions.emit('card:select'),this.data)
 		if (actions?.onClick) {
 			if (this.cardButton) {
 				this.cardButton.addEventListener('click', actions.onClick);
 			} else {
-				// this.cardItemButton.addEventListener('click', actions.onClick);
 				this.container.addEventListener('click', actions.onClick);
 			}
 		}

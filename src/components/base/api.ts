@@ -1,4 +1,4 @@
-import { IItem, IItemData } from "../../types";
+import { IItemData } from "../../types";
 
 export type ApiListResponse<Type> = {
     total: number,

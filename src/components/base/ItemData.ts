@@ -1,6 +1,7 @@
 import { IEvents } from './events';
 import { Model } from './Model';
 import { IItemData, IOrder, IAppState, TOrderData } from '../../types';
+import { appChanges, errorMessage } from '../../utils/constants';
 
 export class ItemData extends Model<IItemData> {
 	id: string;
@@ -11,9 +12,6 @@ export class ItemData extends Model<IItemData> {
 	description: string;
 	selected: boolean;
 
-	constructor(data: Partial<IItemData>, protected events: IEvents) {
-		super(data, events);
-	}
 }
 
 export class AppState extends Model<IAppState> {
@@ -27,23 +25,17 @@ export class AppState extends Model<IAppState> {
 		total: 0,
 	};
 	errors: {};
-	valid: true;
-	// preview: string | null;
-	errorMessage = [
-		'поле не может быть пустым',
-		'необходимо выбрать способ оплаты',
-		'необходимо заполнить все поля',
-	];
+	valid: false;
 
-	getItem(id: string): IItemData {
-		return this.catalog.find((item) => id === item.id);
-	}
-	selectItem(id: string) {
-		const item = this.getItem(id);
-		item.selected = true;
-		console.log(item);
-		this.events.emit('items:changed');
-	}
+	// getItem(id: string): IItemData {
+	// 	return this.catalog.find((item) => id === item.id);
+	// }
+	// selectItem(id: string) {
+	// 	const item = this.getItem(id);
+	// 	//item.selected = true;
+	// 	console.log(item);
+	// 	this.events.emit(appChanges.catalogChanged);
+	// }
 
 	setItems(items: IItemData[]) {
 		items.map((item) => {
@@ -52,86 +44,86 @@ export class AppState extends Model<IAppState> {
 			}
 			this.catalog.push(item);
 		});
-		this.emitChanges('items:changed', { items: this.catalog });
+		this.emitChanges(appChanges.catalogChanged, { items: this.catalog });
 	}
 
 	setOrderField(field: keyof TOrderData, value: string) {
 		this.order[field] = value;
 
 		if (this.validateOrder()) {
-			this.events.emit('order:ready', this.order);
+			this.events.emit(appChanges.formOrderReady, this.order);
 		}
 	}
 
 	validateOrder() {
 		const errors: string[] = [];
 		if (!this.order.address && !this.order.payment) {
-			errors.push(this.errorMessage[2]);
+			errors.push(errorMessage[2]);
 		} else {
 			if (!this.order.address) {
-				errors.push(this.errorMessage[0]);
+				errors.push(errorMessage[0]);
 			}
 			if (!this.order.payment) {
-				errors.push(this.errorMessage[1]);
+				errors.push(errorMessage[1]);
 			}
 		}
 		this.errors = errors;
-		this.events.emit('order:change', this.errors);
+		this.events.emit(appChanges.orderChange, this.errors);
+		return Object.keys(errors).length === 0;
+	}
+
+	setContactsField(field: keyof TOrderData, value: string) {
+		this.order[field] = value;
+		if (this.validateContacts()) {
+			this.events.emit(appChanges.formContactsReady, this);
+		}
+	}
+
+	validateContacts() {
+		const errors: string[] = [];
+		if (!this.order.phone && !this.order.email) {
+			errors.push(errorMessage[2]);
+		} else {
+			if (!this.order.phone) {
+				errors.push(errorMessage[0]);
+			}
+			if (!this.order.email) {
+				errors.push(errorMessage[0]);
+			}
+		}
+		this.errors = errors;
+		this.events.emit(appChanges.contactsChange, this.errors);
 		return Object.keys(errors).length === 0;
 	}
 
 	setPreview(item: IItemData) {
-		//this.preview = item.id;
-		this.emitChanges('preview:changed', item);
+		this.emitChanges(appChanges.previewChanged, item);
 	}
 
 	getTotalSum() {
 		return this.order.items.reduce((partialSum, a) => partialSum + a.price, 0);
 	}
-	toggleOrderedItem(item: IItemData) {
+	toggleOrderedItem() {
 		this.catalog.forEach((item) => {
 			item.selected = false;
 		});
 	}
 
 	clearBasket() {
-		this.order.items.forEach((item) => {
-			this.toggleOrderedItem(item);
-			this.order.items = [];
-			this.order.total = 0;
-		});
+		this.toggleOrderedItem();
+		this.order.items = [];
+		this.order.total = 0;
 	}
+
 	addToBasket(item: IItemData) {
 		item.selected = true;
 		this.order.items.push(item);
 		this.order.total = this.getTotalSum();
 	}
+
 	removeFromBasket(item: IItemData) {
 		item.selected = !true;
 		this.order.items = this.order.items.filter((it) => it.id !== item.id);
 		this.order.total = this.getTotalSum();
-	}
-
-	setContactsField(field: keyof TOrderData, value: string) {
-		this.order[field] = value;
-		if (this.validateContacts()) {
-			this.events.emit('contacts:ready', this);
-		}
-	}
-	validateContacts() {
-		const errors: string[] = [];
-		if (!this.order.phone && !this.order.email) {
-			errors.push(this.errorMessage[2]);
-		} else {
-			if (!this.order.phone) {
-				errors.push(this.errorMessage[0]);
-			}
-			if (!this.order.email) {
-				errors.push(this.errorMessage[1]);
-			}
-		}
-		this.errors = errors;
-		this.events.emit('contacts:change', this.errors);
-		return Object.keys(errors).length === 0;
 	}
 }
