@@ -2,9 +2,8 @@ import { Model } from './Model';
 import { IItemData, IOrder, IAppState, TOrderData } from '../../types';
 import { appChanges, errorMessage } from '../../utils/constants';
 
-
 export class AppState extends Model<IAppState> {
-    catalog: IItemData[] = [];
+	catalog: IItemData[] = [];
 	order: IOrder = {
 		email: '',
 		phone: '',
@@ -63,12 +62,11 @@ export class AppState extends Model<IAppState> {
 		if (!this.order.phone && !this.order.email) {
 			errors.push(errorMessage[2]);
 		} else {
-			if (!this.order.phone) {
-				errors.push(errorMessage[0]);
-			}
-			if (!this.order.email) {
-				errors.push(errorMessage[0]);
-			}
+			Object.values(this.order).forEach((val) => {
+				if (!val) {
+					errors.push(errorMessage[0]);
+				}
+			});
 		}
 		this.errors = errors;
 		this.events.emit(appChanges.contactsChange, this.errors);
@@ -98,7 +96,6 @@ export class AppState extends Model<IAppState> {
 		this.order.payment = '';
 		this.order.email = '';
 		this.order.phone = '';
-
 	}
 
 	addToBasket(item: IItemData) {

@@ -90,8 +90,11 @@ events.on(appChanges.modalClose, () => {
 });
 
 events.on(appChanges.basketOpen, () => {
-	if (appData.order.total === 0 && ((appData.order.items.length === 0)||appData.order.items.length === 1)) {
-        basket.setHidden()
+	if (
+		appData.order.total === 0 &&
+		(appData.order.items.length === 0 || appData.order.items.length === 1)
+	) {
+		basket.setHidden();
 		basket.toggleButton(false);
 	} else {
 		if (basket.toggleButton) {
@@ -142,16 +145,16 @@ events.on(appChanges.formOrderOpen, () => {
 	});
 });
 
-
-events.on(/^order\..*:change$/,
+events.on(
+	/^order\..*:change$/,
 	(data: { field: keyof TOrderData; value: string }) => {
 		appData.setOrderField(data.field, data.value);
 	}
 );
 
 events.on(appChanges.orderChange, (errors) => {
-	if (!Object.keys(errors).length == false) {
-		formOrder.valid = !Object.keys(errors).length;		
+	if (errors) {
+		formOrder.valid = !Object.keys(errors).length;
 		formOrder.errors = Object.values(errors).join('  ');
 	} else {
 		formOrder.errors = '';
@@ -160,7 +163,7 @@ events.on(appChanges.orderChange, (errors) => {
 events.on(appChanges.formOrderReady, () => {
 	formOrder.valid = true;
 });
-events.on(appChanges.formOrderSubmit, () => {	
+events.on(appChanges.formOrderSubmit, () => {
 	modal.render({
 		content: formContacts.render({
 			email: '',
@@ -171,7 +174,8 @@ events.on(appChanges.formOrderSubmit, () => {
 	});
 });
 
-events.on(/^contacts\..*:change$/,
+events.on(
+	/^contacts\..*:change$/,
 	(data: { field: keyof TOrderData; value: string }) => {
 		appData.setContactsField(data.field, data.value);
 	}
@@ -181,9 +185,10 @@ events.on(appChanges.formContactsReady, () => {
 	formContacts.valid = true;
 });
 events.on(appChanges.contactsChange, (errors) => {
-	if (!Object.keys(errors).length == false) {
+	if (errors) {
+		//(!Object.keys(errors).length == false)
 		formContacts.valid = !Object.keys(errors).length;
-		formContacts.errors = Object.values(errors).join('');	
+		formContacts.errors = Object.values(errors).join('');
 	} else {
 		formContacts.errors = '';
 	}
