@@ -1,7 +1,7 @@
-import { Component } from './base/Component';
-import { ensureElement, createElement } from '../utils/utils';
-import { EventEmitter } from './base/events';
-import { appChanges } from '../utils/constants';
+import { Component } from '../base/Component';
+import { ensureElement, createElement } from '../../utils/utils';
+import { EventEmitter } from '../base/events';
+import { appChanges } from '../../utils/constants';
 interface IBasketView {
 	items: HTMLElement[];
 	total: number;

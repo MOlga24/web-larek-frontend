@@ -2,17 +2,17 @@ import { EventEmitter } from './components/base/events';
 import './scss/styles.scss';
 import { CDN_URL, API_URL, errorMessage, appChanges } from './utils/constants';
 import { ItemDataApi } from './components/base/ItemDataApi';
-import { Basket } from './components/Basket';
+import { Basket } from './components/view/Basket';
 import { cloneTemplate } from './utils/utils';
-import { Page } from './components/Page';
+import { Page } from './components/view/Page';
 import { AppState } from './components/base/ItemData';
 import { Modal } from './components/common/Modal';
 import { ensureElement } from './utils/utils';
-import { Success } from './components/OrderSuccess';
+import { Success } from './components/view/OrderSuccess';
 import { IItemData, TOrderData } from './types';
-import { Card } from './components/Card';
-import { FormOrder } from './components/Form_Order';
-import { FormContacts } from './components/Form_Contacts';
+import { Card } from './components/view/Card';
+import { FormOrder } from './components/view/Form_Order';
+import { FormContacts } from './components/view/Form_Contacts';
 
 //templates
 const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
