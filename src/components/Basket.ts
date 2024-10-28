@@ -1,7 +1,6 @@
 import { Component } from './base/Component';
 import { ensureElement, createElement } from '../utils/utils';
 import { EventEmitter } from './base/events';
-import {} from '../utils/utils';
 import { appChanges } from '../utils/constants';
 interface IBasketView {
 	items: HTMLElement[];

@@ -1,5 +1,4 @@
 import { Component } from './base/Component';
-// import {ItemStatus} from "../types";
 import { ensureElement } from '../utils/utils';
 import { categoryName } from '../utils/constants';
 interface ICardActions {
