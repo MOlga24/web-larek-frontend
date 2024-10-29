@@ -410,7 +410,8 @@ interface IFormOrder {
 - `set items(items: HTMLElement[])` - меняет содержимое в корзине.
 Методы:
 - `toggleButton(value:boolean) ` - меняет доступность кнопки оформления;
-- `setHidden()` - скрывает итоговую цену, если ее нет.
+- `setHidden()` - скрывает итоговую цену, если ее нет;
+- `setVisible()` -показывет итоговую цену.
 
 #### Класс FormContacts
 Наследует класс `Form`, в качестве дженерика передается интерфейс `IContacts`.
