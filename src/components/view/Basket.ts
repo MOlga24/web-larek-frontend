@@ -44,4 +44,7 @@ export class Basket extends Component<IBasketView> {
 	setHidden(): void {
 		this.basketTotal.style.display = 'none';
 	}
+	setVisible() {
+		this.basketTotal.style.removeProperty('display');
+	}
 }

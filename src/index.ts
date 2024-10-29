@@ -98,6 +98,7 @@ events.on(appChanges.basketOpen, () => {
 		basket.toggleButton(false);
 	} else {
 		if (basket.toggleButton) {
+			basket.setVisible();
 			basket.toggleButton(true);
 		}
 	}
