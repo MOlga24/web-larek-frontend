@@ -1,11 +1,11 @@
 import { EventEmitter } from './components/base/events';
 import './scss/styles.scss';
-import { CDN_URL, API_URL, errorMessage, appChanges } from './utils/constants';
-import { ItemDataApi } from './components/base/ItemDataApi';
+import { CDN_URL, API_URL, errorMessage, AppChanges } from './utils/constants';
+import { ItemDataApi } from './components/ItemDataApi';
 import { Basket } from './components/view/Basket';
 import { cloneTemplate } from './utils/utils';
 import { Page } from './components/view/Page';
-import { AppState } from './components/base/ItemData';
+import { AppState } from './components/ItemData';
 import { Modal } from './components/common/Modal';
 import { ensureElement } from './utils/utils';
 import { Success } from './components/view/OrderSuccess';
@@ -51,25 +51,23 @@ api
 	.then((data) => {
 		appData.setItems(data);
 	})
-	.catch((err) => {
-		console.error(err);
-	});
+	.catch(console.error);
 
-events.on(appChanges.catalogChanged, () => {
+events.on(AppChanges.catalogChanged, () => {
 	page.counter = appData.order.items.length;
 	page.catalog = appData.catalog.map((item) => {
 		const catalogItem = new Card('card', cloneTemplate(catalogTemplate), {
-			onClick: () => events.emit(appChanges.cardSelected, item),
+			onClick: () => events.emit(AppChanges.cardSelected, item),
 		});
 		return catalogItem.render(item);
 	});
 });
-events.on(appChanges.cardSelected, (item: IItemData) => {
+events.on(AppChanges.cardSelected, (item: IItemData) => {
 	appData.setPreview(item);
 });
-events.on(appChanges.previewChanged, (item: IItemData) => {
+events.on(AppChanges.previewChanged, (item: IItemData) => {
 	const ItemPreview = new Card('card', cloneTemplate(itemPreviewTemplate), {
-		onClick: () => events.emit(appChanges.basketAdd, item),
+		onClick: () => events.emit(AppChanges.basketAdd, item),
 	});
 	if (item.selected == true) {
 		ItemPreview.buttonText = 'Удалить из корзины';
@@ -79,33 +77,33 @@ events.on(appChanges.previewChanged, (item: IItemData) => {
 
 // Блокируем прокрутку страницы если открыта модалка
 
-events.on(appChanges.modalOpen, () => {
+events.on(AppChanges.modalOpen, () => {
 	page.locked = true;
 });
 
 // ... и разблокируем
 
-events.on(appChanges.modalClose, () => {
+events.on(AppChanges.modalClose, () => {
 	page.locked = false;
 });
 
-events.on(appChanges.basketOpen, () => {
+events.on(AppChanges.basketOpen, () => {
 	if (
 		appData.order.total === 0 &&
 		(appData.order.items.length === 0 || appData.order.items.length === 1)
 	) {
-		basket.setHidden();
+		basket.makeHidden();
 		basket.toggleButton(false);
 	} else {
 		if (basket.toggleButton) {
-			basket.setVisible();
+			basket.makeVisible();
 			basket.toggleButton(true);
 		}
 	}
 	modal.render({ content: basket.render() });
 });
 
-events.on(appChanges.basketAdd, (item: IItemData) => {
+events.on(AppChanges.basketAdd, (item: IItemData) => {
 	modal.close();
 	appData.order.items.some((it) => it.id === item.id)
 		? appData.removeFromBasket(item)
@@ -118,23 +116,24 @@ function setBasket() {
 	page.counter = appData.order.items.length;
 	basket.items = appData.order.items.map((item) => {
 		const basketItem = new Card('card', cloneTemplate(basketCardTemplate), {
-			onClick: () => events.emit(appChanges.basketDelete, item),
+			onClick: () => events.emit(AppChanges.basketDelete, item),
 		});
 		basketItem.index = appData.order.items.indexOf(item) + 1;
 		return basketItem.render(item);
 	});
 }
 
-events.on(appChanges.basketDelete, (item: IItemData) => {
+events.on(AppChanges.basketDelete, (item: IItemData) => {
 	appData.removeFromBasket(item);
 	if (appData.order.total == 0) {
 		basket.toggleButton(false);
-		basket.setHidden();
+		basket.makeHidden();
+		
 	}
 	setBasket();
 });
 
-events.on(appChanges.formOrderOpen, () => {
+events.on(AppChanges.formOrderOpen, () => {
 	appData.clearOrder();
 	modal.render({
 		content: formOrder.render({
@@ -153,7 +152,7 @@ events.on(
 	}
 );
 
-events.on(appChanges.orderChange, (errors) => {
+events.on(AppChanges.orderChange, (errors) => {
 	if (errors) {
 		formOrder.valid = !Object.keys(errors).length;
 		formOrder.errors = Object.values(errors).join('  ');
@@ -161,10 +160,10 @@ events.on(appChanges.orderChange, (errors) => {
 		formOrder.errors = '';
 	}
 });
-events.on(appChanges.formOrderReady, () => {
+events.on(AppChanges.formOrderReady, () => {
 	formOrder.valid = true;
 });
-events.on(appChanges.formOrderSubmit, () => {
+events.on(AppChanges.formOrderSubmit, () => {
 	modal.render({
 		content: formContacts.render({
 			email: '',
@@ -182,10 +181,10 @@ events.on(
 	}
 );
 
-events.on(appChanges.formContactsReady, () => {
+events.on(AppChanges.formContactsReady, () => {
 	formContacts.valid = true;
 });
-events.on(appChanges.contactsChange, (errors) => {
+events.on(AppChanges.contactsChange, (errors) => {
 	if (errors) {
 		//(!Object.keys(errors).length == false)
 		formContacts.valid = !Object.keys(errors).length;
@@ -196,7 +195,7 @@ events.on(appChanges.contactsChange, (errors) => {
 });
 
 // Отправлена форма заказа
-events.on(appChanges.formContactsSubmit, () => {
+events.on(AppChanges.formContactsSubmit, () => {
 	appData.order.items.forEach((item) => {
 		if (item.price == 0) {
 			appData.removeFromBasket(item);
@@ -210,10 +209,7 @@ events.on(appChanges.formContactsSubmit, () => {
 		phone: appData.order.phone,
 		total: appData.getTotalSum(),
 	};
-	appData.clearBasket();
-	basket.items = [];
-	basket.total = '';
-	events.emit(appChanges.catalogChanged);
+
 	api
 		.orderItems(order)
 		.then((result) => {
@@ -226,8 +222,10 @@ events.on(appChanges.formContactsSubmit, () => {
 			modal.render({
 				content: success.render({}),
 			});
+			appData.clearBasket();
+			basket.items = [];
+			basket.total = '';
+			events.emit(AppChanges.catalogChanged);
 		})
-		.catch((err) => {
-			console.error(err);
-		});
+		.catch(console.error);
 });

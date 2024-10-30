@@ -1,7 +1,7 @@
 import { Component } from '../base/Component';
 import { ensureElement, createElement } from '../../utils/utils';
 import { EventEmitter } from '../base/events';
-import { appChanges } from '../../utils/constants';
+import { AppChanges } from '../../utils/constants';
 interface IBasketView {
 	items: HTMLElement[];
 	total: number;
@@ -20,7 +20,7 @@ export class Basket extends Component<IBasketView> {
 		this.basketTotal = this.container.querySelector('.basket__price');
 		this.basketButton = this.container.querySelector('.basket__button');
 		this.basketButton.addEventListener('click', () => {
-			events.emit(appChanges.formOrderOpen);
+			events.emit(AppChanges.formOrderOpen);
 		});
 	}
 	set items(items: HTMLElement[]) {
@@ -41,10 +41,10 @@ export class Basket extends Component<IBasketView> {
 	toggleButton(value: boolean) {
 		this.setDisabled(this.basketButton, !value);
 	}
-	setHidden(): void {
-		this.basketTotal.style.display = 'none';
+	makeHidden() {
+		this.setHidden(this.basketTotal);
 	}
-	setVisible() {
-		this.basketTotal.style.removeProperty('display');
+	makeVisible() {
+		this.setVisible(this.basketTotal);
 	}
 }

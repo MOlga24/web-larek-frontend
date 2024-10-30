@@ -1,6 +1,6 @@
 import { Component } from '../base/Component';
 import { ensureElement } from '../../utils/utils';
-import { categoryName } from '../../utils/constants';
+import { CategoryName } from '../../utils/constants';
 interface ICardActions {
 	onClick: () => void;
 }
@@ -88,8 +88,8 @@ export class Card<T> extends Component<ICard<T>> {
 	set category(value: string) {
 		this.setText(this.cardCategory, value);
 		if (this.cardCategory) {
-			if (value in Object(categoryName)) {
-				this.toggleClass(this.cardCategory, Object(categoryName)[value], true);
+			if (value in Object(CategoryName)) {
+				this.toggleClass(this.cardCategory, Object(CategoryName)[value], true);
 			}
 		}
 	}
@@ -97,6 +97,6 @@ export class Card<T> extends Component<ICard<T>> {
 		this.setText(this.basketItemIndex, value);
 	}
 	set buttonText(value: string) {
-		this.cardButton.textContent = value;
+		this.setText(this.cardButton, value);
 	}
 }

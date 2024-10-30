@@ -1,6 +1,6 @@
-import { Model } from './Model';
-import { IItemData, IOrder, IAppState, TOrderData } from '../../types';
-import { appChanges, errorMessage } from '../../utils/constants';
+import { Model } from './base/Model';
+import { IItemData, IOrder, IAppState, TOrderData } from '../types';
+import { AppChanges, errorMessage } from '../utils/constants';
 
 export class AppState extends Model<IAppState> {
 	catalog: IItemData[] = [];
@@ -22,14 +22,14 @@ export class AppState extends Model<IAppState> {
 			}
 			this.catalog.push(item);
 		});
-		this.emitChanges(appChanges.catalogChanged, { items: this.catalog });
+		this.emitChanges(AppChanges.catalogChanged, { items: this.catalog });
 	}
 
 	setOrderField(field: keyof TOrderData, value: string) {
 		this.order[field] = value;
 
 		if (this.validateOrder()) {
-			this.events.emit(appChanges.formOrderReady, this.order);
+			this.events.emit(AppChanges.formOrderReady, this.order);
 		}
 	}
 
@@ -46,14 +46,14 @@ export class AppState extends Model<IAppState> {
 			}
 		}
 		this.errors = errors;
-		this.events.emit(appChanges.orderChange, this.errors);
+		this.events.emit(AppChanges.orderChange, this.errors);
 		return Object.keys(errors).length === 0;
 	}
 
 	setContactsField(field: keyof TOrderData, value: string) {
 		this.order[field] = value;
 		if (this.validateContacts()) {
-			this.events.emit(appChanges.formContactsReady, this.order);
+			this.events.emit(AppChanges.formContactsReady, this.order);
 		}
 	}
 
@@ -69,12 +69,12 @@ export class AppState extends Model<IAppState> {
 			});
 		}
 		this.errors = errors;
-		this.events.emit(appChanges.contactsChange, this.errors);
+		this.events.emit(AppChanges.contactsChange, this.errors);
 		return Object.keys(errors).length === 0;
 	}
 
 	setPreview(item: IItemData) {
-		this.emitChanges(appChanges.previewChanged, item);
+		this.emitChanges(AppChanges.previewChanged, item);
 	}
 
 	getTotalSum() {

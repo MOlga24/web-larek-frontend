@@ -1,8 +1,8 @@
-export const API_URL = `${process.env.API_ORIGIN}`;
+export const API_URL = `${process.env.API_ORIGIN}/api/weblarek`;
 export const CDN_URL = `${process.env.API_ORIGIN}/content/weblarek`;
 
 export const settings = {};
-export enum categoryName {
+export enum CategoryName {
 	другое = 'card__category_other',
 	дополнительное = 'card__category_additional',
 	'хард-скил' = 'card__category_hard',
@@ -13,7 +13,7 @@ export const errorMessage = [
 	'необходимо выбрать способ оплаты',
 	'необходимо заполнить все поля',
 ];
-export enum appChanges {
+export enum AppChanges {
 	catalogChanged = 'catalog:changed',
 	cardSelected = 'card:select',
 	previewChanged = 'preview:changed',
@@ -23,8 +23,6 @@ export enum appChanges {
 	modalOpen = 'modal:open',
 	modalClose = 'modal:close',
 	formOrderOpen = 'form_order:open',
-	// addressChange = 'address:change',
-	// paymentChange = 'payment:change',
 	orderChange = 'order:change',
 	formOrderReady = 'form_order:ready',
 	formOrderSubmit = 'order:submit',
